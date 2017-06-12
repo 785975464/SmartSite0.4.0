@@ -5,17 +5,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-<!--Import materialize.css-->
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!--Import jQuery before materialize.js-->
 	<script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
-  
   <style type="text/css">
 
   </style>
-
 </head>
 <body>
 
@@ -25,25 +20,12 @@
 	<div class="page">
 	    <div class="page__hd">
 	        <h1 class="page__title">操作记录</h1>
-	        <!-- <p class="page__desc">列表</p> -->
 	    </div>
 	    <div class="page__bd">
 	        <div class="weui-cells__title">点击查看用户操作记录</div>
 		    <div class="weui-cells">
 		    </div>
 	    </div>
-	    <!-- <div class="page__ft">
-	        <a href="javascript:home()"><img src="/smartsite/images/icon_footer_link.png" /></a>
-	    </div> -->
-	    <!--BEGIN toast-->
-	    <div id="toast" style="display: none;">
-	        <div class="weui-mask_transparent"></div>
-	        <div class="weui-toast">
-	            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-	            <p class="weui-toast__content">加载失败</p>
-	        </div>
-	    </div>
-	    <!--end toast-->
 	        <!-- loading toast -->
 	    <div id="loadingToast" style="display:none;">
 	        <div class="weui-mask_transparent"></div>
@@ -56,24 +38,17 @@
 </main>
 
 <script>
-	//$toast = $('#toast');
 	$loadingToast = $('#loadingToast');
-	$url = SystemUtils.getServerUrl()+"staff/pad/get";
-
-	$(function(){
-		if ($loadingToast.css('display') != 'none') return;
-		$loadingToast.fadeIn(100);
-    });
+	//$url = SystemUtils.getServerUrl()+"staff/pad/get";
+	$url = SystemUtils.getServerUserUrl();
 
 	$(function () {
+		$loadingToast.fadeIn(100);
 		$.ajax({
 		    url: $url,
 		    type: "get",
+		    async: false,
 		    success: function (padsinfo) {
-		    	setTimeout(function () {
-					$("#loadingToast").fadeOut(100);
-				}, 500);
-
 		    	var obj = eval('(' + padsinfo + ')');
 		  		if (obj.length<=0) {
 		  			$div_main = $("<div class='col s12 card hoverable'></div>");
@@ -81,31 +56,26 @@
 		  			$div_main.append($div);
 		  			$("main").append($div_main);
 		  		}
-				for (var i = 0; i < obj.recordsTotal ; i++ ) {
-					document.querySelector(".weui-cells").innerHTML += 
-						"<a class='weui-cell weui-cell_access' href='operationrecords.html?padcol="+obj.data[i].padcol+"'>"+
-							"<div class='weui-cell__bd'>"+
-								"<p>"+obj.data[i].id+" "+obj.data[i].padcol+" "+obj.data[i].name+" "+obj.data[i].position+" "+obj.data[i].level+"</p>"+
-							"</div>"+
-							"<div class='weui-cell__ft'>"+
-							"</div>"+
-						"</a>";
+		  		else{
+					for (var i = 0; i < obj.recordsTotal ; i++ ) {
+						document.querySelector(".weui-cells").innerHTML +=
+							"<a class='weui-cell weui-cell_access' href='operationrecords.html?padcol="+obj.data[i].padcol+"'>"+
+								"<div class='weui-cell__bd'>"+
+									"<p>"+obj.data[i].id+" "+obj.data[i].padcol+" "+obj.data[i].name+" "+obj.data[i].position+" "+obj.data[i].level+"</p>"+
+								"</div>"+
+								"<div class='weui-cell__ft'>"+
+								"</div>"+
+							"</a>";
+					}
 				}
-
-
-
 		    },
 		    error: function (error) {
-		    	//SystemUtils.showToast(error);
 		    	SystemUtils.showToast("网络异常，请检查网络连接！");
-
-	            //$toast.fadeIn(100);
-	            //setTimeout(function () {
-	            //    $toast.fadeOut(100);
-	            //}, 2000);
-		        //console.log(error);
 		    }
 		});
+		setTimeout(function () {
+			$("#loadingToast").fadeOut(100);
+		}, 500);
 	});
 
 

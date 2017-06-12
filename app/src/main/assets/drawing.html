@@ -50,12 +50,15 @@
 </main>
 
 <script>
-  // loading
-    $url = SystemUtils.getServerUrl()+"document/type/getchild/id/52";
+//该文件暂未用到
+    $url = SystemUtils.getServerUrl()+"/document/type/getchild/id/52";
+    //$url = SystemUtils.getServerTypeUrl();
     $loadingToast = $('#loadingToast');
     $(function(){
         if ($loadingToast.css('display') != 'none') return;
         $loadingToast.fadeIn(100);
+        //获取一级列表
+
     });
   $(function () {
     $loadingToast.fadeIn(100);

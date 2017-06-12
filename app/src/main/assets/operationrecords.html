@@ -5,24 +5,14 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-<!--Import materialize.css-->
- <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!--Import jQuery before materialize.js-->
-  <!--<script type="text/javascript" src="/smartsite/jquery/jquery-2.1.1.min.js"></script>-->
 	<script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
-  
   <style type="text/css">
 
   </style>
-
 </head>
 <body>
-
-
-
 <main>
 	<div class="page">
 	    <div class="page__bd">
@@ -30,15 +20,6 @@
 	        <div class="weui-cells">
 	        </div>
 	    </div>
-	    <!--BEGIN toast-->
-	    <div id="toast" style="display: none;">
-	        <div class="weui-mask_transparent"></div>
-	        <div class="weui-toast">
-	            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-	            <p class="weui-toast__content">加载失败</p>
-	        </div>
-	    </div>
-	    <!--end toast-->
 	        <!-- loading toast -->
 	    <div id="loadingToast" style="display:none;">
 	        <div class="weui-mask_transparent"></div>
@@ -52,34 +33,19 @@
 
 <script>
 	var urlinfo=window.location.href; //获取当前页面的url
-	//var len=urlinfo.length;//获取url的长度
 	var padcol=urlinfo.split("=")[1];//对获得的参数字符串按照“=”进行分割
-
-	//$toast = $('#toast');
 	$loadingToast = $('#loadingToast');
-	$url = SystemUtils.getServerUrl()+"monitor/staff/getstafflog/id/"+padcol;
-
-
-	$(function(){
-		if ($loadingToast.css('display') != 'none') return;
-		$loadingToast.fadeIn(100);
-    });
+	//$url = SystemUtils.getServerUrl()+"monitor/staff/getstafflog/id/"+padcol;
+	$url = SystemUtils.getServerStafflogUrl()+"/"+padcol;
 
 	$(function () {
+		$loadingToast.fadeIn(100);
 		$.ajax({
 		    url: $url,
-		    //data:{"columns[0][searchable]":true,"columns[0][data]":"iddoctype","search[value]":id},
 		    type: "get",
+		    async: false,
 		    success: function (recordsinfo) {
-		    	setTimeout(function () {
-					$("#loadingToast").fadeOut(100);
-				}, 500);
-		    	//var obj = eval('(' + recordsinfo + ')');
 		    	var obj = eval(recordsinfo);
-
-				//SystemUtils.showToast("obj:"+obj);
-				//SystemUtils.showToast("obj.data:"+obj.data);
-				//SystemUtils.showToast("obj.data.length:"+obj.data.length);
 		  		if (typeof(obj.data) == "undefined" || obj.data.length<=0) {
 		  			document.querySelector(".weui-cells").innerHTML +=
 			            "<div class='weui-cell'>"+
@@ -88,24 +54,25 @@
 			                "</div>"+
 				        "</div>";
 		  		}
-				for (var i = 0; i < obj.data.length ; i++ ) {
-					document.querySelector(".weui-cells").innerHTML += 
-						//"<a class='weui-cell weui-cell_access' href=''>"+
-						"<div class='weui-cell'>"+
-							"<div class='weui-cell__bd'>"+
-								"<p>"+"文件名称："+obj.data[i].name+" 阅读次数："+obj.data[i].times+"次 阅读时长："+obj.data[i].duration+"</p>"+
-							"</div>"+
-							//"<div class='weui-cell__ft'>"+
-						"</div>";
-						//"</a>";
+		  		else{
+					for (var i = 0; i < obj.data.length ; i++ ) {
+						document.querySelector(".weui-cells").innerHTML +=
+							"<div class='weui-cell'>"+
+								"<div class='weui-cell__bd'>"+
+									"<p>"+"文件名称："+obj.data[i].name+" 阅读次数："+obj.data[i].times+"次 阅读时长："+obj.data[i].duration+"</p>"+
+								"</div>"+
+								//"<div class='weui-cell__ft'>"+
+							"</div>";
+					}
 				}
 		    },
 		    error: function (error) {
-		    	//SystemUtils.showToast(error);
 				SystemUtils.showToast("网络异常，请检查网络连接！");
-		        //console.log(error);
 		    }
 		});
+		setTimeout(function () {
+			$("#loadingToast").fadeOut(100);
+		}, 500);
 	});
 
 

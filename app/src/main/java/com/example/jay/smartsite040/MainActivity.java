@@ -239,7 +239,13 @@ public class MainActivity extends AppCompatActivity
                 if (url.indexOf("localdrawings")>0){
                     webView.loadUrl("javascript: getLocalDrawings() ");
                 }
+				if (url.indexOf("photo.html")>0){
 
+//					if (photostatus==true){
+//						Log.e("http", "发现新照片！");
+//					}
+//					webView.loadUrl("javascript: getLocalDrawings() ");
+				}
 				//打开摄像头
 //				if(url.indexOf("photo")>0){
 //					takePhoto("testimg" + Math.random()*1000+1 + ".jpg");
@@ -268,7 +274,7 @@ public class MainActivity extends AppCompatActivity
 			 * 调用摄像头的方法
 			 */
 	public String fileFullName;//照相后的照片的全整路径
-	private Uri photouri;
+	private Uri photouri;					//保存拍照uri
 	public void takePhoto(String filename) {
 		Log.e("http","----start to take photo ----");
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -423,17 +429,24 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+			String message=null;		//message保存了照片的url或者出错信息
 			if (resultCode == RESULT_OK) {
 				// Image captured and saved to fileUri specified in the Intent
 //				Toast.makeText(this, "Image saved to:" + intent.getData(), Toast.LENGTH_LONG).show();
-				Log.e("http", "Image captured and saved to fileUri specified in the Intent! intent.getStringExtra():"+MediaStore.EXTRA_OUTPUT);
+				Log.e("http", "Image captured and saved to fileUri specified in the Intent!");
 				Log.e("http", "global photouri:"+photouri);
 				new systemUtils(MainActivity.this).broadcastPhotoInfo(photouri);
+				message=photouri.toString();
+				webView.loadUrl("javascript: showPhotoMessage('"+message+ "','url') ");		//加载当前页面的showPhotoMessage()
 			} else if (resultCode == RESULT_CANCELED) {
-				Log.e("http", "User cancelled the image capture!");
+				message="已取消！";
+				webView.loadUrl("javascript: showPhotoMessage('"+message+ "','msg') ");		//加载当前页面的showPhotoMessage()
+//				Log.e("http", "User cancelled the image capture!");
 				// User cancelled the image capture
 			} else {
-				Log.e("http", "Image capture failed, advise user");
+				message="系统异常！";
+				webView.loadUrl("javascript: showPhotoMessage('"+message+ "','msg') ");		//加载当前页面的showPhotoMessage()
+//				Log.e("http", "Image capture failed, advise user");
 				// Image capture failed, advise user
 			}
 		}

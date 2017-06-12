@@ -5,61 +5,24 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-<!--Import materialize.css-->
- <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!--Import jQuery before materialize.js-->
-  <!--<script type="text/javascript" src="/smartsite/jquery/jquery-2.1.1.min.js"></script>-->
 	<script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
-  
   <style type="text/css">
 
   </style>
-
 </head>
 <body>
-
-
-
 <main>
 	<div class="page">
 	    <div class="page__hd">
 	        <h1 class="page__title">平板信息</h1>
-	        <!-- <p class="page__desc">列表</p> -->
 	    </div>
 	    <div class="page__bd">
 	        <div class="weui-cells__title">点击查看设备登记信息</div>
 	        <div class="weui-cells">
-	            <a class="weui-cell weui-cell_access" href="padinfo.html">
-	                <div class="weui-cell__bd">
-	                    <p>cell standard</p>
-	                </div>
-	                <div class="weui-cell__ft">
-	                </div>
-	            </a>
-	            <a class="weui-cell weui-cell_access" href="padinfo.html">
-	                <div class="weui-cell__bd">
-	                    <p>cell standard</p>
-	                </div>
-	                <div class="weui-cell__ft">
-	                </div>
-	            </a>
 	        </div>
 	    </div>
-	    <!-- <div class="page__ft">
-	        <a href="javascript:home()"><img src="/smartsite/images/icon_footer_link.png" /></a>
-	    </div> -->
-	    <!--BEGIN toast-->
-	    <div id="toast" style="display: none;">
-	        <div class="weui-mask_transparent"></div>
-	        <div class="weui-toast">
-	            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-	            <p class="weui-toast__content">加载失败</p>
-	        </div>
-	    </div>
-	    <!--end toast-->
 	        <!-- loading toast -->
 	    <div id="loadingToast" style="display:none;">
 	        <div class="weui-mask_transparent"></div>
@@ -70,82 +33,46 @@
 	    </div>
 	</div>
 </main>
-
 <script>
-	$toast = $('#toast');
 	$loadingToast = $('#loadingToast');
-	$url = SystemUtils.getServerUrl()+"staff/pad/get";
-	// $url = "http://202.119.84.51:9090/smartsite/index.php/home/staff/pad/get";
-
-	$(function(){
-		//SystemUtils.showToast($url);
-
-		if ($loadingToast.css('display') != 'none') return;
-		$loadingToast.fadeIn(100);
-    });
+	//$url = SystemUtils.getServerUrl()+"/staff/pad/get";
+	$url = SystemUtils.getServerUserUrl();
 
 	$(function () {
-		//$url = "http://202.119.84.51:9090/smartsite/index.php/home/staff/pad/get";
-		//SystemUtils.showToast($url);
-
+		$loadingToast.fadeIn(100);
 		$.ajax({
-			// url: "{$Think.config.ServerURL}staff/pad/get",
 		    url: $url,
 		    type: "get",
+		    async: false,
 		    success: function (padsinfo) {
-		    	setTimeout(function () {
-					$("#loadingToast").fadeOut(100);
-				}, 500);
-		    	// SystemUtils.showToast(padinfo);
-	            // $loadingToast.fadeIn(100);
-	            //setTimeout(function () {
-	                // $loadingToast.fadeOut(100);
-	                //$("#loadingToast").fadeOut(100);		//重新获得引用
-	            //}, 500);
-
 		    	var obj = eval('(' + padsinfo + ')');
-				// console.log(obj);
-				// console.log(obj.recordsTotal);
 		  		if (obj.length<=0) {
 		  			$div_main = $("<div class='col s12 card hoverable'></div>");
 		  			$div = $("<p>该用户暂无档案！</p>");
 		  			$div_main.append($div);
 		  			$("main").append($div_main);
 		  		}
-				for (var i = 0; i < obj.recordsTotal ; i++ ) {
-					document.querySelector(".weui-cells").innerHTML += 
-					// "<div class='weui-cells'>"+
-						"<a class='weui-cell weui-cell_access' href='padinfo.html?id="+obj.data[i].id+"'>"+
-							"<div class='weui-cell__bd'>"+
-								"<p>"+obj.data[i].id+" "+obj.data[i].padcol+" "+obj.data[i].name+" "+obj.data[i].position+"</p>"+
-							"</div>"+
-							"<div class='weui-cell__ft'>"+
-							"</div>"+
-						"</a>";
-					// "</div>";
+		  		else{
+					for (var i = 0; i < obj.recordsTotal ; i++ ) {
+						document.querySelector(".weui-cells").innerHTML +=
+							"<a class='weui-cell weui-cell_access' href='padinfo.html?id="+obj.data[i].id+"'>"+
+								"<div class='weui-cell__bd'>"+
+									"<p>"+obj.data[i].id+" "+obj.data[i].padcol+" "+obj.data[i].name+" "+obj.data[i].position+"</p>"+
+								"</div>"+
+								"<div class='weui-cell__ft'>"+
+								"</div>"+
+							"</a>";
+					}
 				}
-
-
-
 		    },
 		    error: function (error) {
-		    	SystemUtils.showToast(error);
-		    	// Materialize.toast("网络异常，请稍后再试！", 2000);
-		    	// setTimeout(function () {
-	      //           $loadingToast.fadeOut(100);
-	      //       }, 100);
-		    	// if ($toast.css('display') != 'none') return;
-
-	            $toast.fadeIn(100);
-	            setTimeout(function () {
-	                $toast.fadeOut(100);
-	            }, 2000);
-		        console.log(error);
+		        SystemUtils.showToast("网络异常，请检查网络连接！");
 		    }
 		});
+		setTimeout(function () {
+			$("#loadingToast").fadeOut(100);
+		}, 500);
 	});
-
-
 </script>
 </body>
 </html>

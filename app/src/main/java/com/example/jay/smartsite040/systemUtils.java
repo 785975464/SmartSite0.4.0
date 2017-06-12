@@ -81,12 +81,39 @@ public class systemUtils {
     public String getServerImeiUrl(){
         return config.serverImeiURL;
     }
+    @JavascriptInterface
+    public String getServerTypeUrl(){
+        return config.serverTypeURL;
+    }
+    @JavascriptInterface
+    public String getServerUserUrl(){
+        return config.serverUserURL;
+    }
+    @JavascriptInterface
+    public String getServerStafflogUrl(){
+        return config.serverStafflogURL;
+    }
+    @JavascriptInterface
+    public String getServerFileInfoUrl(){
+        return config.serverFileInfoURL;
+    }
+    @JavascriptInterface
+    public String getServerPadInfoUrl(){
+        return config.serverPadInfoURL;
+    }
 
 
 
     @JavascriptInterface
     public String getLocalErrorPage(){
         return config.localErrorPage;
+    }
+
+
+
+    @JavascriptInterface
+    public String getPhotoPath(){
+        return config.photoPath;
     }
 
 

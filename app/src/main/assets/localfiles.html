@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>文件信息</title>
+<title>本地文件</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-<!--Import materialize.css-->
- <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
     <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
 	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!--Import jQuery before materialize.js-->
-  <!--<script type="text/javascript" src="/smartsite/jquery/jquery-2.1.1.min.js"></script>-->
     <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
-
-  
   <style type="text/css">
   h1{
   	display: inline;
@@ -25,14 +18,9 @@
   	margin: 0.67rem auto;
   	float:right;
   }
-
   </style>
-
 </head>
 <body>
-
-
-
 <main>
 	<div class="page">
 	    <div class="page__hd" >
@@ -43,37 +31,9 @@
 	    <div class="page__bd">
 	        <div class="weui-cells__title">点击打开本地文件</div>
 	        <div class="weui-cells">
-	            <!-- <a class="weui-cell weui-cell_access" href="">
-	                <div class="weui-cell__bd">
-	                    <p>local file</p>
-	                </div>
-	                <div class="weui-cell__ft">
-	                	打开
-	                </div>
-	            </a>
-	            <a class="weui-cell weui-cell_access" href="">
-	                <div class="weui-cell__bd">
-	                    <p>local file</p>
-	                </div>
-	                <div class="weui-cell__ft">
-	                	打开
-	                </div>
-	            </a> -->
 	        </div>
 	    </div>
-	    <!-- <div class="page__ft">
-	        <a href="javascript:home()"><img src="/smartsite/images/icon_footer_link.png" /></a>
-	    </div> -->
 	</div>
-	<!--BEGIN toast-->
-    <div id="toast" style="display: none;">
-        <div class="weui-mask_transparent"></div>
-        <div class="weui-toast">
-            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-            <p class="weui-toast__content">加载失败</p>
-        </div>
-    </div>
-    <!--end toast-->
         <!-- loading toast -->
     <div id="loadingToast" style="display:none;">
         <div class="weui-mask_transparent"></div>
@@ -87,39 +47,29 @@
 <script>
 	// loading
     $loadingToast = $('#loadingToast');
-    $toast = $('#toast');
     $(function(){
         if ($loadingToast.css('display') != 'none') return;
-
         $loadingToast.fadeIn(100);
     });
 
-
 	//getLocalFiles()方法由MainActivity启动
     function getLocalFiles() {
-    	// SystemUtils.showToast("浏览成功！");
     	var filelist=FileUtils.getFileList();
-    	// var filelist="[{'58c928055af6b.jpg':'圣诞草莓树.jpg'},{'58c92848d99b2.pdf':'test.pdf'}]";
-    	// console.log(filelist);
     	var obj = eval('(' + filelist + ')');
     	//console.log(obj);
-
     	if(obj.length<=0){
     		document.querySelector(".weui-cells").innerHTML += 
 	            "<div class='weui-cell'>"+
 	                "<div class='weui-cell__bd'>"+
 	                    "<p>暂无本地文件</p>"+
 	                "</div>"+
-	                // "<div class='weui-cell__ft'>暂无本地文件</div>"+
 		        "</div>";
     	}
 		for (var i = 0; i < obj.length ; i++ ) {
 			var  keys = Object.keys(obj[i]);
 		// 	console.log(keys);
 		// 	console.log(obj[i][keys]);
-
-			document.querySelector(".weui-cells").innerHTML += 
-			// "<div class='weui-cells'>"+
+			document.querySelector(".weui-cells").innerHTML +=
 				"<a class='weui-cell weui-cell_access' onclick=openFile('"+keys+"');>"+
 					"<div class='weui-cell__bd'>"+
 						"<p>"+keys+" "+obj[i][keys]+"</p>"+
@@ -133,16 +83,9 @@
         }, 500);
     }
 
-
 	function openFile(keys) {
-		// SystemUtils.openlocalfile(filekey);
 		SystemUtils.sActivity(keys);
-		// nativeMethod.toActivity();
-		// window.demo.clickOnAndroid();
-		// window.demo.testFunc1("12345");
 	}
-
-	
 </script>
 </body>
 </html>

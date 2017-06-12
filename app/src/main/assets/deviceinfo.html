@@ -61,14 +61,10 @@
 </body>
 <script>
     var imei = SystemUtils.getAndroidPadCol();
-    //$url = SystemUtils.getServerUrl()+"staff/pad/getByPadcol/imei/"+imei;
     $url = SystemUtils.getServerImeiUrl()+"/"+imei;
-    // loading
     $loadingToast = $('#loadingToast');
     $(function(){
-        if ($loadingToast.css('display') != 'none') return;
 		$loadingToast.fadeIn(100);
-
         if(SystemUtils.isConnectingToInternet()==true){     //网络已连接，检查设备状态
             $.ajax({
                 url: $url,

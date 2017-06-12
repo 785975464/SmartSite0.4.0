@@ -4,12 +4,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
-<!--Import materialize.css-->
- <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
     <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
     <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!--<script type="text/javascript" src="/smartsite/jquery/jquery-2.1.1.min.js"></script>-->
     <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
 </head>
 <body>
@@ -17,7 +13,6 @@
     <div class="page">
         <div class="page__hd">
             <h1 class="page__title">文件下载信息</h1>
-            <!-- <p class="page__desc">文件</p> -->
         </div>
         <a href="javascript:;" target="_blank" class="weui-btn weui-btn_plain-primary" id="downloadbtn">下载</a>
         <div class="page__bd">
@@ -53,26 +48,7 @@
                         <p class="weui-media-box__desc" id="file_brief">暂无</p>
                     </div>
                 </div>
-                <!-- <div class="weui-panel__ft">
-                    <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link">
-                        <div class="weui-cell__bd">查看更多</div>
-                        <span class="weui-cell__ft"></span>
-                    </a>
-                </div> -->
             </div>
-        <!-- <div class="page__ft">
-            <a href="javascript:home()"><img src="/smartsite/images/icon_footer_link.png" /></a>
-        </div> -->
-
-            <!--BEGIN toast-->
-            <div id="toast" style="display: none;">
-                <div class="weui-mask_transparent"></div>
-                <div class="weui-toast">
-                    <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-                    <p class="weui-toast__content">加载失败</p>
-                </div>
-            </div>
-            <!--end toast-->
                 <!-- loading toast -->
             <div id="loadingToast" style="display:none;">
                 <div class="weui-mask_transparent"></div>
@@ -87,32 +63,20 @@
 </body>
 <script>
 	var urlinfo=window.location.href; //获取当前页面的url
-	var len=urlinfo.length;//获取url的长度
 	var id=urlinfo.split("=")[1];//对获得的参数字符串按照“=”进行分割
-    // var downloadurl = "http://192.168.1.111:8081/project/Public/Uploads/";//savepath/savename";
-    // var downloadurl="{$Think.config.downloadurl}";
     $downloadurl = SystemUtils.getDownloadURL();    //下载地址
-    $url = SystemUtils.getServerUrl()+"document/index/getById";     //服务器地址
-
-    // loading
+    //$url = SystemUtils.getServerUrl()+"/document/index/getById";     //服务器地址
+    $url = SystemUtils.getServerFileInfoUrl();      //文件详情
     $loadingToast = $('#loadingToast');
-    //$toast = $('#toast');
-    $(function(){
-        if ($loadingToast.css('display') != 'none') return;
-        $loadingToast.fadeIn(100);
-    });
+
 	$(function () {
-	    SystemUtils.showToast($url+"document/index/getById");
+	    $loadingToast.fadeIn(100);
 		$.ajax({
-			// url: "http://202.119.84.51:9090/smartsite/index.php/home/staff/pad/get",
-			// url: "{$Think.config.ServerURL}document/index/getById",
 			url: $url,
 		    data: {"id": id},
 		    type: "post",
+		    async: false,
 		    success: function (fileinfo) {
-		    	setTimeout(function () {
-	                $loadingToast.fadeOut(100);
-	            }, 500);
 		    	$("#file_id").text(fileinfo.idfile);
 		    	$("#file_user").text(fileinfo.user);
 				$("#file_name").text(fileinfo.name);
@@ -125,28 +89,17 @@
                 $("#downloadbtn").attr("href",$downloadurl);
 		    },
 		    error: function (error) {
-
-	      		setTimeout(function () {
-	                $loadingToast.fadeOut(100);
-	            }, 100);
                 SystemUtils.showToast("网络异常，请检查网络连接！");
-		        //console.log(error);
 		    }
 		});
+		setTimeout(function () {
+            $loadingToast.fadeOut(100);
+        }, 500);
 	});
 
-    function domyjob() {
-        // alert("domyjob!");
-        // console.log("domyjob!");
-        // $("#file_brief").text("调用js方法！");
-        $("#downloadbtn").text("打开");
-        
-    }
-
-    function getFileNameInfo() {
+    function getFileNameInfo() {        //后台调用
         FileUtils.setFileInfo($("#file_name").text(),$("#file_savename").text());
         SystemUtils.showToast("下载成功！");
-        //FileUtils.getAllFileInfo();
     }
 </script>
 </html>
