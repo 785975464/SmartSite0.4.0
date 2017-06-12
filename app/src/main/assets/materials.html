@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>计划物资</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+<!--Import materialize.css-->
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+
+
+ <!--Import jQuery before materialize.js-->
+  <script type="text/javascript" src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+
+
+  
+  <style type="text/css">
+  h1{
+    display: inline;
+  }
+  #lookmore{
+    height:1.6rem;
+    line-height:1.6rem;
+    margin: 0.67rem auto;
+    float:right;
+  }
+
+  </style>
+
+</head>
+<body>
+
+
+
+<main>
+  <div class="page">
+      <div class="page__hd" >
+          <h1 class="page__title">计划物资文档列表</h1>
+          <!-- <a href="__MODULE__/Index/localdrawings" class="weui-cell_access weui-cell_link" id="lookmore">查看本地图纸</a> -->
+          <!-- <p class="page__desc">列表</p> -->
+      </div>
+      <div class="page__bd">
+          <div class="weui-cells__title">点击查看文档信息</div>
+          <div class="weui-cells">
+          </div>
+      </div>
+  </div>
+  <!--BEGIN toast-->
+    <div id="toast" style="display: none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+            <p class="weui-toast__content">加载失败</p>
+        </div>
+    </div>
+    <!--end toast-->
+        <!-- loading toast -->
+    <div id="loadingToast" style="display:none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">数据加载中</p>
+        </div>
+    </div>
+</main>
+
+<script>
+  // loading
+  $url = SystemUtils.getServerUrl()+"document/type/getchild/id/78";
+  $loadingToast = $('#loadingToast');
+  $toast = $('#toast');
+  $(function(){
+      if ($loadingToast.css('display') != 'none') return;
+
+      $loadingToast.fadeIn(100);
+  });
+  $(function () {
+      $loadingToast.fadeIn(100);
+      setTimeout(function () {
+          $("#loadingToast").fadeOut(100);
+      }, 500);
+
+      $.ajax({
+          // 获得文件列表
+          url: $url,
+          type: "get",
+          // data:{"columns[0][searchable]":true,"columns[0][data]":"suffix","search[value]":"doc"},
+          // type: "get",
+          success: function (filesinfo) {
+              //console.log(filesinfo);
+
+              var obj = eval(filesinfo);
+              //console.log(obj);
+
+              if(obj.data.length<=0){
+                document.querySelector(".weui-cells").innerHTML +=
+                      "<div class='weui-cell'>"+
+                          "<div class='weui-cell__bd'>"+
+                              "<p>暂无可下载的文件</p>"+
+                          "</div>"+
+                    "</div>";
+              }
+              for (var i = 0; i < obj.data.length ; i++ ) {
+                document.querySelector(".weui-cells").innerHTML +=
+                  "<a class='weui-cell weui-cell_access' href='secondtag.html?id="+obj.data[i].iddoctype+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                      "<p>"+obj.data[i].iddoctype+" "+obj.data[i].name+"</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>"+
+                    "</div>"+
+                  "</a>";
+              }
+          },
+          error: function (error) {
+              //console.log(error);
+              SystemUtils.showToast("网络异常，请检查网络连接！");
+          }
+      });
+  });
+  
+</script>
+</body>
+</html>

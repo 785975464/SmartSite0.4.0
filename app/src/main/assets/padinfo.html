@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>设备信息</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+<!--Import materialize.css-->
+ <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
+    <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+    <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+ <!--<script type="text/javascript" src="/smartsite/jquery/jquery-2.1.1.min.js"></script>-->
+    <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+<main>
+    <div class="page">
+        <div class="page__hd">
+            <h1 class="page__title">设备登记信息</h1>
+            <p class="page__desc">平板</p>
+        </div>
+        <div class="page__bd">
+            <div class="weui-panel weui-panel_access">
+                <div class="weui-panel__hd">详细信息列表</div>
+                <div class="weui-panel__bd">
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">平板ID</h4>
+                        <p class="weui-media-box__desc" id="pad_id">暂无</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">padcol</h4>
+                        <p class="weui-media-box__desc" id="pad_col">暂无</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者name</h4>
+                        <p class="weui-media-box__desc" id="pad_name">暂无</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者position</h4>
+                        <p class="weui-media-box__desc" id="pad_position">暂无</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者level</h4>
+                        <p class="weui-media-box__desc" id="pad_level">暂无</p>
+                    </div>
+                </div>
+                <!-- <div class="weui-panel__ft">
+                    <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link">
+                        <div class="weui-cell__bd">查看更多</div>
+                        <span class="weui-cell__ft"></span>
+                    </a>
+                </div> -->
+            </div>
+        <!-- <div class="page__ft">
+            <a href="javascript:home()"><img src="/smartsite/images/icon_footer_link.png" /></a>
+        </div> -->
+
+            <!--BEGIN toast-->
+            <div id="toast" style="display: none;">
+                <div class="weui-mask_transparent"></div>
+                <div class="weui-toast">
+                    <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+                    <p class="weui-toast__content">加载失败</p>
+                </div>
+            </div>
+            <!--end toast-->
+                <!-- loading toast -->
+            <div id="loadingToast" style="display:none;">
+                <div class="weui-mask_transparent"></div>
+                <div class="weui-toast">
+                    <i class="weui-loading weui-icon_toast"></i>
+                    <p class="weui-toast__content">数据加载中</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script>
+	var urlinfo=window.location.href; //获取当前页面的url
+	var len=urlinfo.length;//获取url的长度
+	var id=urlinfo.split("=")[1];//对获得的参数字符串按照“=”进行分割
+	//var id=1;
+    $url = SystemUtils.getServerUrl()+"staff/pad/getById";
+
+    function show(id){
+        SystemUtils.showToast("Android调用js: "+id);
+    }
+    // loading
+    $loadingToast = $('#loadingToast');
+    $toast = $('#toast');
+    $(function(){
+        // var $loadingToast = $('#loadingToast');
+        // $('#showLoadingToast').on('click', function(){
+            if ($loadingToast.css('display') != 'none') return;
+
+            $loadingToast.fadeIn(100);
+            
+        // });
+    });
+	$(function () {
+		$.ajax({
+			// url: "http://202.119.84.51:9090/smartsite/index.php/home/staff/pad/get",
+			// url: "{$Think.config.ServerURL}staff/pad/getById/",
+            url: $url,
+		    data: {"id": id},
+		    type: "post",
+		    success: function (padinfo) {
+		    	// console.log("查询成功:"+padsinfo.data.name);
+		    	setTimeout(function () {
+	                $loadingToast.fadeOut(100);
+	            }, 500);
+		    	$("#pad_id").text(padinfo.data.idpad);
+		    	$("#pad_col").text(padinfo.data.padcol);
+				$("#pad_name").text(padinfo.data.name);
+				$("#pad_position").text(padinfo.data.position);
+				$("#pad_level").text(padinfo.data.level);
+		    	
+		    },
+		    error: function (error) {
+		    	// Materialize.toast("网络异常，请稍后再试！", 2000);
+		    	// if ($toast.css('display') != 'none') return;
+		    	// $toast.fadeIn(100);
+		    	// setTimeout(function () {
+	      //           $loadingToast.fadeOut(100);
+	      //       }, 2000);
+	      		setTimeout(function () {
+	                $loadingToast.fadeOut(100);
+	            }, 100);
+		    	if ($toast.css('display') != 'none') return;
+
+	            $toast.fadeIn(100);
+	            setTimeout(function () {
+	                $toast.fadeOut(100);
+	            }, 2000);
+		        console.log(error);
+		    }
+		});
+	});
+</script>
+</html>

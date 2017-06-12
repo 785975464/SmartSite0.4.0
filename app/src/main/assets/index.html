@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>智慧工地</title>
+
+  <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+  <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+
+  <style type="text/css">
+  	html,body,.page{
+      height: 100%;
+	  width: 100%;
+    }
+	body{
+	  width: 100%;
+	  margin: 0px;
+	  padding: 0px;
+	}
+	 .container{
+	  padding: 1px;
+	  margin: 0px 64px;
+	 }
+	.weui-grid {
+      width: 25%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="page">
+    <!--<div class="page__hd">-->
+        <!--<h1 class="page__title">本地控制面板</h1>-->
+        <!--<p class="page__desc">主要模块</p>-->
+    <!--</div>-->
+    <div class="weui-grids">
+        <a href="" class="weui-grid" id="myintroduction">
+            <div class="weui-grid__icon">
+                <img src="./images/introduction.png" alt="">
+            </div>
+            <p class="weui-grid__label">项目简介</p>
+        </a>
+        <a href="localdrawings.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/drawing.png" alt="">
+            </div>
+            <p class="weui-grid__label">图纸CAD</p>
+        </a>
+        <!--<a href="" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/monitor.png" alt="">
+            </div>
+            <p class="weui-grid__label">现场监控</p>
+        </a>-->
+        <a href="techcontrol.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/techcontrol.png" alt="">
+            </div>
+            <p class="weui-grid__label">技术控制</p>
+        </a>
+        <a href="securitycontrol.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/securitycontrol.png" alt="">
+            </div>
+            <p class="weui-grid__label">安全控制</p>
+        </a>
+        <a href="materials.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/materials.png" alt="">
+            </div>
+            <p class="weui-grid__label">计划物资</p>
+        </a>
+        <a href="" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/workgroups.png" alt="">
+            </div>
+            <p class="weui-grid__label">施工班组</p>
+        </a>
+        <a href="projectschedule.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/projectschedule.png" alt="">
+            </div>
+            <p class="weui-grid__label">项目进度</p>
+        </a>
+	    <a href="userinfo.html" class="weui-grid">
+		    <div class="weui-grid__icon">
+			    <img src="./images/recordsquery.png" alt="">
+		    </div>
+		    <p class="weui-grid__label">操作记录</p>
+	    </a>
+        <a href="pad.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/pad.png" alt="">
+            </div>
+            <p class="weui-grid__label">设备管理</p>
+        </a>
+        <a href="localfiles.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/download.png" alt="">
+            </div>
+            <p class="weui-grid__label">文件下载</p>
+        </a>
+	    <a href="deviceinfo.html" class="weui-grid">
+		    <div class="weui-grid__icon">
+			    <img src="./images/pad.png" alt="">
+		    </div>
+		    <p class="weui-grid__label">设备信息</p>
+	    </a>
+	    <!--本地文件删除功能-->
+	    <!--<a href="localfilesmanage.html" class="weui-grid">
+		    <div class="weui-grid__icon">
+			    <img src="./images/download.png" alt="">
+		    </div>
+		    <p class="weui-grid__label">资料管理</p>
+	    </a>-->
+	    <a href="photo.html" class="weui-grid">
+		    <div class="weui-grid__icon">
+			    <img src="./images/monitor.png" alt="">
+		    </div>
+		    <p class="weui-grid__label">图像采集</p>
+	    </a>
+        <a href="upload.html" class="weui-grid">
+            <div class="weui-grid__icon">
+                <img src="./images/upload.png" alt="">
+            </div>
+            <p class="weui-grid__label">文件上传</p>
+        </a>
+	    <a href="localphotosmanage.html" class="weui-grid">
+		    <div class="weui-grid__icon">
+			    <img src="./images/download.png" alt="">
+		    </div>
+		    <p class="weui-grid__label">本地图片管理</p>
+	    </a>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $url = SystemUtils.getServerRecordUrl();    // 获得记录上传路径 /monitor/staff/add
+    $fileurl = SystemUtils.getServerFileUrl();  // 获得文件列表 /document/file/get
+    var fileArray = new Array();    //文件路径
+    var nameArray = new Array();    //文件名
+
+	$(function(){
+		if(SystemUtils.isConnectingToInternet()==true){     //在联网状态下
+			$("#myintroduction").attr("href",SystemUtils.getServerIntroductionUrl());
+			downloadAllFiles();     //下载文件
+			synchRecords();         //同步记录
+		}
+		else{
+			$("#myintroduction").attr("href",SystemUtils.getLocalErrorPage());
+			SystemUtils.showToast("网络异常，请检查网络连接！");
+		}
+	});
+    function synchRecords(){
+        //SystemUtils.showToast("正在同步浏览记录！ ");
+        var array = FileUtils.getAllFileRecords();
+        var arrayObj = eval("("+array+")");
+		//SystemUtils.showToast("synchRecords() arrayObj.length: "+arrayObj.length);
+		if(arrayObj.length<3){  //至少保存size，"0_0"，"0_1"三项信息
+			//ystemUtils.showToast("暂无可同步记录！ ");
+			return;
+		}
+        var imei=SystemUtils.getAndroidPadCol();
+        $.ajax({        // 同步记录
+			url: $url,
+			data: {"log": arrayObj,"imei":imei},
+		    type: "post",
+		    success: function (info) {
+                //SystemUtils.showToast("success: "+info.info);
+                FileUtils.deleteLocalRecords();
+		    },
+		    error: function (error) {
+		    	// Materialize.toast("网络异常，请稍后再试！", 2000);
+		        SystemUtils.showToast("网络异常，请检查网络连接！");
+		    }
+		});
+    };
+
+	function downloadAllFiles() {    //自动同步文件
+		$.ajax({
+			url: $fileurl,
+		    type: "get",
+		    async: false,   //false代表只有在等待ajax执行完毕后才执行后面语句
+		    success: function (filesinfo) {
+		    	var obj = eval('(' + filesinfo + ')');
+				for (var i = 0; i < obj.recordsTotal ; i++ ) {
+					fileArray.push(obj.data[i].savepath+obj.data[i].savename);  //保存路径名+文件名
+					nameArray.push(obj.data[i].name);
+				}
+		    },
+		    error: function (error) {
+		        SystemUtils.showToast("网络异常，请检查网络连接！");
+		    }
+		});
+		//SystemUtils.showToast("开始下载！");
+		var array = FileUtils.getFileList();     //字符串
+        //var arrayObj = eval("("+array+")");
+        var savename;
+		for(var i=0;i<fileArray.length;i++){
+			savename = fileArray[i].split("/")[1];
+			if(array.indexOf(savename)<0){   //未被下载
+				//SystemUtils.showToast(savename+"未被下载！");
+				downloadFile( SystemUtils.getDownloadURL()+fileArray[i] );
+				FileUtils.setFileInfo(nameArray[i],savename);
+			}
+		}
+	}
+
+	function downloadFile(fileName){        //模拟点击a标签进行文件下载
+	    var link= $("<a href='"+fileName+"'></a>");
+		link.get(0).click();
+	}
+</script>
+</body>
+</html>

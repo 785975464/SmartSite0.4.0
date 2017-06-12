@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>本机信息</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+  <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+  <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+</head>
+<body>
+<main>
+    <div class="page">
+        <div class="page__hd">
+            <h1 class="page__title">设备信息</h1>
+            <!--<p class="page__desc">平板</p>-->
+        </div>
+        <div class="page__bd">
+            <div class="weui-panel weui-panel_access">
+                <div class="weui-panel__hd">详细信息列表</div>
+                <div class="weui-panel__bd">
+                    <div class="weui-media-box weui-media-box_text" style="display:none;">
+                        <h4 class="weui-media-box__title">平板ID</h4>
+                        <p class="weui-media-box__desc" id="pad_id">未知</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">padcol</h4>
+                        <p class="weui-media-box__desc" id="pad_col">未知</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者name</h4>
+                        <p class="weui-media-box__desc" id="pad_name">未知</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者position</h4>
+                        <p class="weui-media-box__desc" id="pad_position">未知</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">使用者level</h4>
+                        <p class="weui-media-box__desc" id="pad_level">未知</p>
+                    </div>
+                    <div class="weui-media-box weui-media-box_text">
+                        <h4 class="weui-media-box__title">idposition</h4>
+                        <p class="weui-media-box__desc" id="pad_idposition">未知</p>
+                    </div>
+                </div>
+
+            </div>
+
+                <!-- loading toast -->
+            <div id="loadingToast" style="display:none;">
+                <div class="weui-mask_transparent"></div>
+                <div class="weui-toast">
+                    <i class="weui-loading weui-icon_toast"></i>
+                    <p class="weui-toast__content">数据加载中</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script>
+    var imei = SystemUtils.getAndroidPadCol();
+    //$url = SystemUtils.getServerUrl()+"staff/pad/getByPadcol/imei/"+imei;
+    $url = SystemUtils.getServerImeiUrl()+"/"+imei;
+    // loading
+    $loadingToast = $('#loadingToast');
+    $(function(){
+        if ($loadingToast.css('display') != 'none') return;
+		$loadingToast.fadeIn(100);
+
+        if(SystemUtils.isConnectingToInternet()==true){     //网络已连接，检查设备状态
+            $.ajax({
+                url: $url,
+                type: "get",
+                async: false,       //同步执行
+                success: function (padinfo) {
+                    if(padinfo.info=="not found"){
+                        SystemUtils.showToast("设备未注册，请联系管理员进行注册！");
+                        //处理设备未注册事件
+                        $("#pad_col").text(SystemUtils.getAndroidPadCol());
+                    }
+                    else if(padinfo.info=="ok"){    //设备状态正常，信息直接覆盖
+                        SystemUtils.setAndroidDatabaseId(padinfo.data.idpad);
+                        SystemUtils.setAndroidName(padinfo.data.name);
+                        SystemUtils.setAndroidPosition(padinfo.data.position);
+                        SystemUtils.setAndroidLevel(padinfo.data.level);
+                        SystemUtils.setAndroidIdPosition(padinfo.data.idposition);
+
+                        $("#pad_id").text(padinfo.data.idpad);
+                        $("#pad_col").text(padinfo.data.padcol);
+                        $("#pad_name").text(padinfo.data.name);
+                        $("#pad_position").text(padinfo.data.position);
+                        $("#pad_level").text(padinfo.data.level);
+                        $("#pad_idposition").text(padinfo.data.idposition);
+                    }
+                    else{
+                        SystemUtils.showToast("服务器异常！");
+                    }
+                },
+                error: function (error) {
+                    SystemUtils.showToast("网络异常，请检查网络连接！");
+                }
+            });
+        }
+        else{       //网络未连接，离线查看本机信息
+            $("#pad_id").text(SystemUtils.getAndroidDatabaseId());
+            $("#pad_col").text(SystemUtils.getAndroidPadCol());
+            $("#pad_name").text(SystemUtils.getAndroidName());
+            $("#pad_position").text(SystemUtils.getAndroidPosition());
+            $("#pad_level").text(SystemUtils.getAndroidLevel());
+            $("#pad_idposition").text(SystemUtils.getAndroidIdPosition());
+        }
+        setTimeout(function () {
+            $loadingToast.fadeOut(100);
+        }, 500);
+    });
+
+</script>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>操作记录</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+<!--Import materialize.css-->
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+
+
+ <!--Import jQuery before materialize.js-->
+  <!--<script type="text/javascript" src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>-->
+    <script type="text/javascript" src="file:///android_asset/jquery/zepto.min.js"></script>
+
+  
+  <style type="text/css">
+  h1{
+  	display: inline;
+  }
+  #lookmore{
+  	height:1.6rem;
+  	line-height:1.6rem;
+  	margin: 0.67rem auto;
+  	float:right;
+  }
+  .mybutton{
+   text-align: right;
+  }
+  </style>
+
+</head>
+<body>
+
+
+
+<main>
+	<div class="page">
+	    <div class="page__hd" >
+	        <h1 class="page__title">记录查询</h1>
+	        <!-- <a href="__MODULE__/Index/localfiles" class="weui-cell_access weui-cell_link" id="lookmore">查看本地文件</a> -->
+	        <!-- <p class="page__desc">列表</p> -->
+            <div class="weui-panel weui-panel_access">
+                <div class="weui-panel__hd">按时间查询</div>
+                <div class="weui-panel__bd">
+                    <div class="weui-media-box__bd">
+                        <div class="weui-cell">
+                            <div class="weui-cell__hd"><label for="" class="weui-label">开始时间</label></div>
+                            <div class="weui-cell__bd">
+                                <input class="weui-input" type="datetime-local" value="" placeholder=""/>
+                            </div>
+                        <!--</div>-->
+                        <!--<div class="weui-cell">-->
+                            <div class="weui-cell__hd"><label for="" class="weui-label">结束时间</label></div>
+                            <div class="weui-cell__bd">
+                                <input class="weui-input" type="datetime-local" value="" placeholder=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mybutton">
+                        <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">查询</a>
+                        <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_warn">撤销</a>
+                    </div>
+                </div>
+
+            </div>
+	    </div>
+	    <div class="page__bd">
+	        <div class="weui-cells__title">点击查看操作记录</div>
+	        <div class="weui-cells">
+	        </div>
+	    </div>
+
+	</div>
+	<!--BEGIN toast-->
+    <div id="toast" style="display: none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+            <p class="weui-toast__content">加载失败</p>
+        </div>
+    </div>
+    <!--end toast-->
+        <!-- loading toast -->
+    <div id="loadingToast" style="display:none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">数据加载中</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    $url = SystemUtils.getServerUrl()+"monitor/staff/get",
+	// loading
+    $loadingToast = $('#loadingToast');
+    $toast = $('#toast');
+    $(function(){
+        if ($loadingToast.css('display') != 'none') return;
+
+        $loadingToast.fadeIn(100);
+    });
+	$(function () {
+		$loadingToast.fadeIn(100);
+        setTimeout(function () {
+            $("#loadingToast").fadeOut(100);
+        }, 500);
+
+		$.ajax({
+			// 获得文件列表
+			url: $url,
+		    type: "get",
+		    success: function (filesinfo) {
+		    	
+
+		    	var obj = eval('(' + filesinfo + ')');
+		  		if(obj.length<=0){
+		    		document.querySelector(".weui-cells").innerHTML += 
+			            "<div class='weui-cell'>"+
+			                "<div class='weui-cell__bd'>"+
+			                    "<p>暂无可下载的文件</p>"+
+			                "</div>"+
+			                // "<div class='weui-cell__ft'>暂无可下载的文件</div>"+
+				        "</div>";
+		    	}
+				for (var i = 0; i < obj.recordsTotal ; i++ ) {
+					document.querySelector(".weui-cells").innerHTML += 
+						"<a class='weui-cell weui-cell_access' href=''>"+   //fileinfo.html?id="+obj.data[i].id+"
+							"<div class='weui-cell__bd'>"+
+								"<p>"+obj.data[i].id+" "+obj.data[i].key+" "+obj.data[i].content+" "+obj.data[i].idstaff+" "+obj.data[i].starttime+" "+obj.data[i].endtime+"</p>"+
+							"</div>"+
+							"<div class='weui-cell__ft'>"+
+							"</div>"+
+						"</a>";
+				}
+
+		    },
+		    error: function (error) {
+		        console.log(error);
+		    }
+		});
+	});
+	
+</script>
+</body>
+</html>

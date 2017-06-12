@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>图片管理</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+<!--Import materialize.css-->
+ <!--<link rel="stylesheet" href="/smartsite/css/weui.css">-->
+    <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+ <!--Import jQuery before materialize.js-->
+    <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+	<!--<script src="file:///android_asset/jquery/jquery-2.1.1.min.js"></script>-->
+  
+  <style type="text/css">
+  h1{
+  	display: inline;
+  }
+  #lookmore{
+  	height:1.6rem;
+  	line-height:1.6rem;
+  	margin: 0.67rem auto;
+  	float:right;
+  }
+  .weui-media-box_appmsg .weui-media-box__hd {
+	  width: 200px;
+	  height: 200px;
+  }
+	img{
+	  position: relative;
+	}
+	input[type='checkbox']{
+	  display: none;
+	  position: absolute;
+	  top: 20px;
+	  right: 30px;
+	}
+	/*#deletephotobtn{
+	  display: none;
+	  float: right;
+	  right: 1rem;
+	  top: 1rem;
+	}*/
+	.operationbtns{
+	  display: none;
+	  position: fixed;
+	  //float: right;
+	  //margin-right: 20px;
+	  right: 1.5rem;
+	  top: 0.5rem;
+	  z-index: 100;
+	}
+  </style>
+
+</head>
+<body>
+
+
+
+<main>
+	<div class="page">
+	    <div class="page__hd" >
+	        <h1 class="page__title">本地图片列表</h1>
+		    <div class="operationbtns">
+			    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" onclick="clearCheckbox();" id="cancelbtn">取消</a>
+		        <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_warn" onclick="deletePhotos();" id="deletephotobtn">删除(<span>0</span>)</a>
+		    </div>
+		    <!--<div class="weui-panel weui-panel_access">
+			    <div class="weui-panel__hd">本地图片预览</div>
+			    <div class="weui-panel__bd">
+				    <div class="weui-flex">
+					    <div class="weui-flex__item" ontouchstart="gtouchstart()" ontouchmove="gtouchmove()" ontouchend="gtouchend()">
+						    <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg" >
+							    <div class="weui-media-box__hd">
+								    <img class="weui-media-box__thumb" src="file:///android_asset/images/pad.png" alt="">
+							    </div>
+						    </a>
+					    </div>
+					    <div class="weui-flex__item" ontouchstart="gtouchstart()" ontouchmove="gtouchmove()" ontouchend="gtouchend()">
+						    <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+							    <div class="weui-media-box__hd">
+								    <img class="weui-media-box__thumb" src="file:///storage/emulated/0/2smartsite/myphoto/IMG_20170606_091601.jpg" alt="">
+							    </div>
+						    </a>
+					    </div>
+					    <div class="weui-flex__item" ontouchstart="gtouchstart()" ontouchmove="gtouchmove()" ontouchend="gtouchend()">
+						    <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+							    <div class="weui-media-box__hd">
+								    <img class="weui-media-box__thumb" src="file:///storage/emulated/0/2smartsite/myphoto/IMG_20170606_091601.jpg" alt="">
+							    </div>
+						    </a>
+					    </div>
+				    </div>
+			    </div>
+		    </div>-->
+	    </div>
+	    <!--<div class="page__bd">
+	        <div class="weui-cells__title">删除本地图片</div>
+	        <div class="weui-cells">
+	        </div>
+	    </div>-->
+		<div id="dialogs">
+			<!--BEGIN dialog1-->
+			<div class="js_dialog" id="iosDialog1" style="display: none;">
+				<div class="weui-mask"></div>
+				<div class="weui-dialog">
+					<div class="weui-dialog__hd"><strong class="weui-dialog__title">删除</strong></div>
+					<div class="weui-dialog__bd">确认要删除吗？</div>
+					<div class="weui-dialog__ft">
+						<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+						<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" onclick="confirmDelete();">删除</a>
+					</div>
+				</div>
+			</div>
+			<!--END dialog1-->
+		</div>
+	</div>
+	<!--BEGIN toast-->
+	<div id="toast" style="display: none;">
+		<div class="weui-mask_transparent"></div>
+		<div class="weui-toast">
+			<i class="weui-icon-success-no-circle weui-icon_toast"></i>
+			<p class="weui-toast__content">加载失败</p>
+		</div>
+	</div>
+	<!--end toast-->
+	<!-- loading toast -->
+	<div id="loadingToast" style="display:none;">
+		<div class="weui-mask_transparent"></div>
+		<div class="weui-toast">
+			<i class="weui-loading weui-icon_toast"></i>
+			<p class="weui-toast__content">数据加载中</p>
+		</div>
+	</div>
+</main>
+
+<script>
+	// loading
+    $loadingToast = $('#loadingToast');
+    $toast = $('#toast');
+    $(function(){
+        if ($loadingToast.css('display') != 'none') return;
+        $loadingToast.fadeIn(100);
+    });
+	$(function(){
+        $('#dialogs').on('click', '.weui-dialog__btn', function(){
+            $(this).parents('.js_dialog').fadeOut(200);
+        });
+    });
+	var timeOutEvent=0;
+	var thisinput;
+	//开始按
+	function gtouchstart(obj){
+		thisinput = $(obj).find("input")[0];
+	    timeOutEvent = setTimeout("longPress()",500);//这里设置定时器，定义长按500毫秒触发长按事件，时间可以自己改，个人感觉500毫秒非常合适
+	    return false;
+	};
+	//手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
+	function gtouchend(obj){
+	    clearTimeout(timeOutEvent);//清除定时器
+	    if(timeOutEvent!=0){
+	        //这里写要执行的内容（尤如onclick事件）
+	        //alert("你这是点击，不是长按");
+	        if($(".operationbtns").css('display')=='block'){
+		        var input = $(obj).find("input");
+		        if (input.attr("checked") && parseInt($("span").html())>-1) {
+		            input.attr("checked",false);
+		            $("span").html(parseInt($("span").html())-1);
+		        }
+		        else{
+		            input.attr("checked",true);
+		            $("span").html(parseInt($("span").html())+1);
+		        }
+	    	}
+	    }
+	    return false;
+	};
+	//如果手指有移动，则取消所有事件，此时说明用户只是要移动而不是长按
+	function gtouchmove(){
+	    clearTimeout(timeOutEvent);//清除定时器
+	    timeOutEvent = 0;
+	};
+
+	function longPress(){
+		//SystemUtils.showToast("长按事件触发");
+		if ($(thisinput).attr("checked")) {
+			return;
+		}
+		$(thisinput).attr("checked",true);
+	    timeOutEvent = 0;
+	    $("input[type='checkbox']").css('display','block');
+	    $(".operationbtns").css('display','inline');
+	    $("span").html(parseInt($("span").html())+1);
+	}
+
+	function deletePhotos() {
+		if(parseInt($("span").html())<=0){
+			return;
+		}
+		$("div.weui-dialog__bd").html("确认要删除这"+$("span").html()+"张照片吗？");
+		$('#iosDialog1').fadeIn(200);
+	}
+	function confirmDelete() {
+		var photolist=new Array();
+        $("input[name=checkphotos]").each(function() {
+            if ($(this).attr("checked")) {
+                //text += $(this).val()+" ";
+                photolist.push($(this).val());
+            }
+        });
+        //alert(photolist);
+        var result = FileUtils.deleteLocalPhotos(photolist);
+        SystemUtils.showToast(result);
+        //alert(result);
+        $("input[type='checkbox']").css('display','none');
+        $("#deletephotobtn").css('display','none');
+        location.reload();
+	}
+	function clearCheckbox() {
+		$(".operationbtns").css('display','none');
+		$("input[type='checkbox']").css('display','none');
+		$("input[name=checkphotos]").each(function() {
+            $(this).attr("checked",false);
+
+        });
+        $("span").html(0);
+	}
+
+	//function test(){
+	//	SystemUtils.showToast("test！");
+	//}
+
+	var compare = function (obj1, obj2) {
+	    var val1 = Object.keys(obj1);
+	    var val2 = Object.keys(obj2);
+	    if (val1 < val2) {
+	        return 1;
+	    } else if (val1 > val2) {
+	        return -1;
+	    } else {
+	        return 0;
+	    }
+	}
+
+	//getLocalPhotosManagement()方法由MainActivity启动
+    function getLocalPhotosManagement() {
+    	//SystemUtils.showToast("in getLocalPhotosManagement！");
+    	var photolist=FileUtils.getPhotoList();
+    	var obj = eval('(' + photolist + ')');
+
+    	if(obj.length<=0){
+    		document.querySelector(".page__hd").innerHTML +=
+	            "<div class='weui-cell'>"+
+	                "<div class='weui-cell__bd'>"+
+	                    "<p>暂无本地图片</p>"+
+	                "</div>"+
+		        "</div>";
+    	}
+    	else{
+	        obj.sort(compare);
+	        //SystemUtils.showToast("obj："+obj);
+	        var content="";
+			for (var i = 0; i < obj.length ; i++ ) {
+				var  keys = Object.keys(obj[i]);
+
+				var head =
+					'<div class="weui-panel weui-panel_access">'+
+						'<div class="weui-panel__hd">'+getDateByKey(keys)+'</div>'+
+							'<div class="weui-panel__bd">';
+								//'<div class="weui-flex">';
+				//SystemUtils.showToast("title："+getDateByKey(keys));
+				var foot =
+								//'</div>'+
+							'</div>'+
+						'</div>'+
+					'</div>';
+				var body="";
+				var photos = obj[i][keys].slice(1,-1).split(", ");
+				//SystemUtils.showToast("photos："+photos+" &photos.length:"+photos.length);
+				for(var j = 0; j < photos.length ; j=j+3 ) {
+					//document.querySelector(".page__hd").innerHTML +=
+					body +=     '<div class="weui-flex">'+
+								    '<div class="weui-flex__item" ontouchstart="gtouchstart(this)" ontouchmove="gtouchmove()" ontouchend="gtouchend(this)">'+
+
+									    '<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg" onclick="getDateByKey('+keys+');">'+
+										    '<div class="weui-media-box__hd">'+
+											    '<img class="weui-media-box__thumb" src="file:///storage/emulated/0/2smartsite/myphoto/'+photos[j]+'" alt="">'+  //'+photos[j]+'
+											    '<input type="checkbox" name="checkphotos" value="'+photos[j]+'">'+
+										    '</div>'+
+									    '</a>'+
+									'</div>';
+					if(j+1< photos.length){
+						body +=
+									'<div class="weui-flex__item" ontouchstart="gtouchstart(this)" ontouchmove="gtouchmove()" ontouchend="gtouchend(this)">'+
+									    '<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg" >'+     //onclick="test();"
+										    '<div class="weui-media-box__hd">'+
+											    '<img class="weui-media-box__thumb" src="file:///storage/emulated/0/2smartsite/myphoto/'+photos[j+1]+'" alt="">'+  //'+photos[j]+'
+											    '<input type="checkbox" name="checkphotos" value="'+photos[j+1]+'">'+
+										    '</div>'+
+									    '</a>'+
+									'</div>';
+					}
+					else{
+						body +=
+									'<div class="weui-flex__item">'+
+									'</div>';
+					}
+					if(j+2< photos.length){
+						body +=
+									'<div class="weui-flex__item" ontouchstart="gtouchstart(this)" ontouchmove="gtouchmove()" ontouchend="gtouchend(this)">'+
+									    '<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg" >'+     //onclick="test();"
+										    '<div class="weui-media-box__hd">'+
+											    '<img class="weui-media-box__thumb" src="file:///storage/emulated/0/2smartsite/myphoto/'+photos[j+2]+'" alt="">'+  //'+photos[j]+'
+											    '<input type="checkbox" name="checkphotos" value="'+photos[j+2]+'">'+
+										    '</div>'+
+									    '</a>'+
+									'</div>'+
+								'</div>';
+					}
+					else{
+						body +=
+									'<div class="weui-flex__item">'+
+									'</div>'+
+								'</div>';
+					}
+				}
+				content += head + body + foot;
+					//"<a class='weui-cell weui-cell_access' onclick=deleteFile('"+keys+"');>"+
+					//	"<div class='weui-cell__bd'>"+
+					//		"<p>"+keys+" "+obj[i][keys]+"</p>"+
+					//	"</div>"+
+					//	"<div class='weui-cell__ft'>删除"+
+					//	"</div>"+
+					//"</a>";
+			}
+			document.querySelector(".page__hd").innerHTML += content;
+		}
+		setTimeout(function () {
+            $loadingToast.fadeOut(100);
+        }, 500);
+    }
+
+	function getDateByKey(keys){
+		var k = keys.toString();
+		//SystemUtils.showToast(k.substring(0,4)+"year"+k.substring(4,6)+"month"+k.substring(6,8)+"day");
+		return k.substring(0,4)+"年"+k.substring(4,6)+"月"+k.substring(6,8)+"日";
+	}
+
+	//function deleteFile(keys){
+	//	var result = FileUtils.deleteLocalFile(keys);
+	//	SystemUtils.showToast(result);
+	//	location.reload();
+	//}
+
+
+	$url = SystemUtils.getServerUrl()+"document/file/get";  // 获得文件列表
+	var fileArray=new Array();
+	function downloadAllFiles(){
+		$.ajax({
+			url: $url,
+		    type: "get",
+		    async: false,   //false代表只有在等待ajax执行完毕后才执行后面语句
+		    success: function (filesinfo) {
+		    	var obj = eval('(' + filesinfo + ')');
+				// console.log(obj);
+
+				for (var i = 0; i < obj.recordsTotal ; i++ ) {
+					fileArray.push(obj.data[i].savepath+obj.data[i].savename);  //保存路径名+文件名
+					//obj.data[i].id+" "+obj.data[i].name+" "+obj.data[i].user+" "+obj.data[i].savename+" "+obj.data[i].savepath
+				}
+		    },
+		    error: function (error) {
+		        SystemUtils.showToast("网络异常，请检查网络连接！");
+		    }
+		});
+		for(var i=0;i<fileArray.length;i++){
+			//SystemUtils.showToast("fileArray:"+routeArray[i]);
+			//SystemUtils.showToast("fileArray:"+fileArray[i]);
+			downloadFile( SystemUtils.getDownloadURL()+fileArray[i] );
+		}
+	}
+
+	function downloadFile(fileName){
+	    var link= $("<a href='"+fileName+"'></a>");
+		link.get(0).click();
+	}
+</script>
+</body>
+</html>
