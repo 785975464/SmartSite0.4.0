@@ -2,39 +2,23 @@ package com.example.jay.smartsite040;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Jay on 2017/3/13.
  */
 public class systemUtils {
 
-
     private Context mContext;
-
 
     public systemUtils(Context context){
         this.mContext = context;
@@ -43,11 +27,13 @@ public class systemUtils {
     //webview中调用toast原生组件
     //添加了 @JavascriptInterface 注解的方法才能被调用
     @JavascriptInterface
-    public void showToast(String toast) {
-		//Log.e("http", "Toast:"+toast);
-        Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
-    }
+    public void showToast(String toast) { Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show(); }
 
+    //系统控制台输出
+    @JavascriptInterface
+    public void consolelog(String log){
+        Log.e("http", "console log:"+log);
+    }
 
     @JavascriptInterface
     public void startDownloadActivity(String filekey) {     //启动下载activity：EmptyActivity
@@ -84,9 +70,7 @@ public class systemUtils {
         return config.serverTypeURL;
     }
     @JavascriptInterface
-    public String getServerTypeListUrl(){
-        return config.serverTypeListURL;
-    }
+    public String getServerTypeListUrl(){ return config.serverTypeListURL; }
     @JavascriptInterface
     public String getServerUserUrl(){
         return config.serverUserURL;
@@ -101,42 +85,40 @@ public class systemUtils {
     public String getServerPadInfoUrl(){
         return config.serverPadInfoURL;
     }
-
-
-
     @JavascriptInterface
     public String getLocalErrorPage(){
         return config.localErrorPage;
     }
-
-
-
     @JavascriptInterface
     public String getPhotoPath(){
         return config.photoPath;
     }
-
-
-
     @JavascriptInterface
     public String getUploadURL(){
         return config.uploadURL;
     }
-
     @JavascriptInterface
     public String getDownloadURL(){
         return config.downloadURL;
     }
-
-//    @JavascriptInterface
-//    public String getActivatedStatus(){
-//        return config.isactivated;
-//    }
-
-//    @JavascriptInterface
-//    public void setActivatedStatus(String status){
-//        config.isactivated=status;
-//    }   //激活设备
+    @JavascriptInterface
+    public String getAndroidDatabaseId(){ return config.databaseid; }
+    @JavascriptInterface
+    public String getAndroidPadCol(){ return config.androidpadcol; }
+    @JavascriptInterface
+    public String getAndroidName(){
+        return config.androidname;
+    }
+    @JavascriptInterface
+    public String getAndroidPosition(){
+        return config.androidposition;
+    }
+    @JavascriptInterface
+    public String getAndroidLevel(){
+        return config.androidlevel;
+    }
+    @JavascriptInterface
+    public String getAndroidIdPosition(){ return config.androidposition; }
 
     @JavascriptInterface
     public void setAndroidDatabaseId(String id){
@@ -158,37 +140,6 @@ public class systemUtils {
     public void setAndroidIdPosition(String idposition){ config.androididposition=idposition; }
 
 
-
-    @JavascriptInterface
-    public String getAndroidDatabaseId(){ return config.databaseid; }
-    @JavascriptInterface
-    public String getAndroidPadCol(){ return config.androidpadcol; }
-    @JavascriptInterface
-    public String getAndroidName(){
-        return config.androidname;
-    }
-    @JavascriptInterface
-    public String getAndroidPosition(){
-        return config.androidposition;
-    }
-    @JavascriptInterface
-    public String getAndroidLevel(){
-        return config.androidlevel;
-    }
-    @JavascriptInterface
-    public String getAndroidIdPosition(){ return config.androidposition; }
-//    @JavascriptInterface
-//    public boolean isWifiConnected() {
-//        if (mContext != null) {
-//            ConnectivityManager mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-//            NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//            if (mWiFiNetworkInfo != null) {
-//                return mWiFiNetworkInfo.isAvailable();
-//            }
-//        }
-//        return false;
-//    }
-
     /**
      * 检测是否已经连接网络。
      * @return 当且仅当连上网络时返回true,否则返回false。
@@ -200,50 +151,25 @@ public class systemUtils {
             return false;
         }
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-//        Log.e("http", "info: "+info );
         if (info==null){
-//            Log.e("http", "info为空" );
             return false;
         }
         else if (info.getType()==ConnectivityManager.TYPE_WIFI){
 //            Log.e("http", "wifi已连接！" );
             return (info != null) && info.isAvailable();
         }
-//        Log.e("http", "其他连接方式！" );
         return false;
     }
 
-
-
+    //通知SD卡重新挂载，用于照片更新时使用
     public void broadcastPhotoInfo(Uri photouri){
 //        Log.e("http", "in broadcastPhotoInfo! photouri:"+photouri);
-        //通知SD卡重新挂载
         mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, photouri));
-//        mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File("/storage/emulated/0/2smartsite/myphoto/IMG_20170611_210132.jpg"))));
-
     }
 
-    @JavascriptInterface
-    public void updateDocCategory(String[] id, String[] name){      //根据前台传来的文档分类信息进行更新
-        if (id.length==name.length){
-            config.documentOrderList.clear();
-            config.documentCategoryList.clear();
-            for (int i=0;i<id.length;i++){
-                Log.e("http", "in updateDocCategory! id[i]:"+id[i]+" &name[i]:"+name[i]);
-                config.documentOrderList.add(id[i]);
-                config.documentCategoryList.add(name[i]);
-            }
-        }
-    }
-
-    @JavascriptInterface
-    public void consolelog(String log){
-        Log.e("http", "console log:"+log);
-    }
-
+    //检查摄像头权限
     @JavascriptInterface
     public boolean isCameraGranted() {
-//        return ContextCompat.checkSelfPermission(mContext, CAMERA) == PERMISSION_GRANTED;
-        return ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED;
     }
 }

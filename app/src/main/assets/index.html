@@ -198,7 +198,6 @@
 			}
 			synchRecords();         //同步记录（异步操作）
 			downloadAllFiles();     //下载文件（同步操作）
-			//updateDocCategory();    //更新文档分类信息（暂不更新）
 			//queryDatabase();        //查询数据库
 
 		}
@@ -267,29 +266,6 @@
 		link.get(0).click();
 	}
 
-//	var doctypeidArray = new Array();      //分类序号
-//    var docnameArray = new Array();        //分类名称
-//	function updateDocCategory(){           // 更新文档分类
-//		$.ajax({
-//            url: $typeurl,
-//            type: "get",
-//            success: function (doctypelist) {
-//                //SystemUtils.showToast("success: "+doctypelist.info);
-//                if(doctypelist.info=="ok"){
-//                    for (var i = 0; i < doctypelist.data.length ; i++ ) {
-//                        doctypeidArray.push(doctypelist.data[i].iddoctype);  //保存分类序号+分类名称
-//                        docnameArray.push(doctypelist.data[i].name);
-//                        console.log(doctypeidArray[i]+" "+docnameArray[i]);
-//                    }
-//                    SystemUtils.updateDocCategory(doctypeidArray,docnameArray); //更新
-//                }
-//            },
-//            error: function (error) {
-//                SystemUtils.showToast("网络异常，请检查网络连接！");
-//            }
-//        });
-//	}
-
 	function buildLocalDatabase(){         //websql前端数据库
 		var success = function(tx,results){     //成功回调
 	        //SystemUtils.consolelog("results:"+results);
@@ -334,7 +310,6 @@
 								[ obj.data[i].id, obj.data[i].name, obj.data[i].fatherid, obj.data[i].fathername, obj.data[i].level ], success, error);
 	                    }
 	                });
-                    //SystemUtils.updateDocCategory(doctypeidArray,docnameArray); //更新
                 }
             },
             error: function (error) {

@@ -38,10 +38,6 @@ public class MainActivity extends AppCompatActivity
 
     private WebView webView;
     private long exitTime;  //记录退出时间
-//    a、初始化 全局变量
-
-//    private final static int FILECHOOSER_RESULTCODE = 1;
-    private static final int FILE_SELECT_CODE = 0;
 
     @SuppressLint("JavascriptInterface")
     @Override
@@ -52,7 +48,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false);		//添加返回按钮
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);				//添加返回按钮
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {	//返回按钮添加点击响应事件
 			@Override
 			public void onClick(View v) {
@@ -60,15 +56,15 @@ public class MainActivity extends AppCompatActivity
 			}
 		});
 		webView = (WebView) findViewById(R.id.webView1);
-		webView.getSettings().setAppCacheEnabled(true);// 设置启动缓存
-        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);//不加上，会显示白边
+		webView.getSettings().setAppCacheEnabled(true);						// 设置启动缓存
+        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);		//不加上，会显示白边
 		webView.addJavascriptInterface(new systemUtils(this), "SystemUtils");
 		webView.addJavascriptInterface(new fileUtils(this), "FileUtils");
 
 		final Handler mHandler = new Handler();
 		webView.addJavascriptInterface(new Object(){
 			@JavascriptInterface
-			public String getAndroidPhoto() {//将被js调用
+			public String getAndroidPhoto() {
 				Log.e("http","in getAndroidPhoto! ");
 				mHandler.post(new Runnable() {
 					public void run() {
@@ -81,8 +77,7 @@ public class MainActivity extends AppCompatActivity
 				return fileFullName;
 			}
 			@JavascriptInterface
-			public void setAndroidTitle(final String title) {//设置title，被js调用
-				Log.e("http","in setAndroidTitle! ");
+			public void setAndroidTitle(final String title) {	//设置title，被js调用
 				mHandler.post(new Runnable() {
 					public void run() {
 						MainActivity.this.setTitle(title);

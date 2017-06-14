@@ -29,7 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
         <!--<activity android:name=".EmptyActivity"/>-->
         <activity android:name=".EmptyActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"

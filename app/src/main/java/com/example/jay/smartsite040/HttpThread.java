@@ -31,40 +31,27 @@ public class HttpThread  extends Thread {
             HttpURLConnection conn = (HttpURLConnection) httpUrl.openConnection();
             //get请求的话默认就行了，post请求需要setDoOutput(true)，这个默认是false的。
 //          conn.setDoInput(true);
-//          conn.setDoOutput(true);
             InputStream in = conn.getInputStream();
-
-            File downloadFile;
             File sdFile;
             FileOutputStream out = null;
-            //截取文件名
-            String filename = mUrl.substring(mUrl.lastIndexOf("/")+1,mUrl.length());
+            String filename = mUrl.substring(mUrl.lastIndexOf("/")+1,mUrl.length());    //截取文件名
             Log.e("http","filename is:"+filename);
             //判断SD卡
             if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-                downloadFile = Environment.getExternalStorageDirectory();
-//                sdFile = new File(downloadFile, "2myfile/"+filename);
-
                 String targetDir = config.downloadPath;
                 File file = new File(targetDir);
                 if (!file.exists()) {
                     file.mkdirs();
                 }
-//                fileFullName = targetDir + "/" + filename;
                 sdFile = new File(file, filename);
                 out = new FileOutputStream(sdFile);
             }
             else{
                 Log.e("http","需要SD卡");
-//                Toast t=Toast.makeText(MainActivity.this, "需要SD卡。", Toast.LENGTH_LONG);
-//                t.setGravity(Gravity.CENTER, 0, 0);
-//                t.show();
                 return;
             }
-            //buffer 6k
-            byte[] b = new byte[6*1024];
+            byte[] b = new byte[6*1024];        //buffer 6k
             int len;
-
             while((len=in.read(b))!=-1){
                 if(out!=null){
                     out.write(b, 0, len);
@@ -73,7 +60,6 @@ public class HttpThread  extends Thread {
             if(out != null){
                 out.close();
             }
-
             if(in != null){
                 in.close();
             }
