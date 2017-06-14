@@ -3,11 +3,13 @@ package com.example.jay.smartsite040;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
@@ -48,17 +50,13 @@ public class systemUtils {
 
 
     @JavascriptInterface
-    public void sActivity(String filekey) {
-//        mContext.startActivity(intent);
+    public void startDownloadActivity(String filekey) {     //启动下载activity：EmptyActivity
         //用Bundle携带数据
         Bundle bundle=new Bundle();
-        //传递name参数为tinyphp
         bundle.putString("filekey", filekey);
         Intent intent = new Intent(mContext,EmptyActivity.class);
         intent.putExtras(bundle);
-
         mContext.startActivity(intent);
-//        mContext.startActivity(new Intent(mContext,EmptyActivity.class));
     }
 
     @JavascriptInterface
@@ -86,13 +84,15 @@ public class systemUtils {
         return config.serverTypeURL;
     }
     @JavascriptInterface
+    public String getServerTypeListUrl(){
+        return config.serverTypeListURL;
+    }
+    @JavascriptInterface
     public String getServerUserUrl(){
         return config.serverUserURL;
     }
     @JavascriptInterface
-    public String getServerStafflogUrl(){
-        return config.serverStafflogURL;
-    }
+    public String getServerStafflogUrl(){ return config.serverStafflogURL; }
     @JavascriptInterface
     public String getServerFileInfoUrl(){
         return config.serverFileInfoURL;
@@ -223,4 +223,27 @@ public class systemUtils {
 
     }
 
+    @JavascriptInterface
+    public void updateDocCategory(String[] id, String[] name){      //根据前台传来的文档分类信息进行更新
+        if (id.length==name.length){
+            config.documentOrderList.clear();
+            config.documentCategoryList.clear();
+            for (int i=0;i<id.length;i++){
+                Log.e("http", "in updateDocCategory! id[i]:"+id[i]+" &name[i]:"+name[i]);
+                config.documentOrderList.add(id[i]);
+                config.documentCategoryList.add(name[i]);
+            }
+        }
+    }
+
+    @JavascriptInterface
+    public void consolelog(String log){
+        Log.e("http", "console log:"+log);
+    }
+
+    @JavascriptInterface
+    public boolean isCameraGranted() {
+//        return ContextCompat.checkSelfPermission(mContext, CAMERA) == PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED;
+    }
 }

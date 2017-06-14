@@ -1,80 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>文件上传</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
- <!--Let browser know website is optimized for mobile-->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
-    <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
- <!-- <script type="text/javascript" src="/smartsite/js/zepto.min.js"></script> -->
-    <script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+	<title>文件上传</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<!--Let browser know website is optimized for mobile-->
+	<meta name="viewport"
+	      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+	<link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+	<!-- <script type="text/javascript" src="/smartsite/js/zepto.min.js"></script> -->
+	<script src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
 </head>
 <body>
 <main>
-    <div class="page">
-        <div class="page__hd">
-            <h1 class="page__title">现场报告</h1>
-            <p class="page__desc">根据现场情况提交文本及图片。</p>
-        </div>
-        <div class="page__bd">
-            <div class="weui-cells">
-                <div class="weui-cell">
-                    <div class="weui-cell__bd">
-                        <input class="weui-input" type="text" placeholder="请输入标题" id="title" maxlength="45"/>
-                    </div>
-                </div>
-            </div>
-            <div class="weui-cells weui-cells_form">
-                <div class="weui-cell">
-                    <div class="weui-cell__bd">
-                        <textarea class="weui-textarea" placeholder="请输入描述文本" rows="3" id="content" maxlength="210"></textarea>
-                        <div class="weui-textarea-counter"><span class="textareaLength">0</span>/200</div>
-                    </div>
-                </div>
-            </div>
-            <div class="weui-gallery" id="gallery">
-                <span class="weui-gallery__img" id="galleryImg"></span>
-                <div class="weui-gallery__opr">
-                    <a href="javascript:" class="weui-gallery__del">
-                        <i class="weui-icon-delete weui-icon_gallery-delete"></i>
-                    </a>
-                </div>
-            </div>
+	<div class="page">
+		<div class="page__hd">
+			<h1 class="page__title">现场报告</h1>
+			<p class="page__desc">根据现场情况提交文本及图片。</p>
+		</div>
+		<div class="page__bd">
+			<div class="weui-cells">
+				<div class="weui-cell">
+					<div class="weui-cell__bd">
+						<input class="weui-input" type="text" placeholder="请输入标题" id="title"
+						       maxlength="45"/>
+					</div>
+				</div>
+			</div>
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__bd">
+						<textarea class="weui-textarea" placeholder="请输入描述文本" rows="3" id="content"
+						          maxlength="210"></textarea>
+						<div class="weui-textarea-counter"><span class="textareaLength">0</span>/200
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="weui-gallery" id="gallery">
+				<span class="weui-gallery__img" id="galleryImg"></span>
+				<div class="weui-gallery__opr">
+					<a href="javascript:" class="weui-gallery__del">
+						<i class="weui-icon-delete weui-icon_gallery-delete"></i>
+					</a>
+				</div>
+			</div>
 
-            <div class="weui-cells weui-cells_form">
-                <div class="weui-cell">
-                    <div class="weui-cell__bd">
-                        <div class="weui-uploader">
-                            <div class="weui-uploader__hd">
-                                <p class="weui-uploader__title">选择本地图片</p>
-                            </div>
-                            <div class="weui-uploader__bd">
-                                <ul class="weui-uploader__files" id="uploaderFiles">
-                                </ul>
-                                <div class="weui-uploader__input-box">
-                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple />
-                                    <input id="img_str" type="hidden" value="" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="weui-btn-area">
-                <a class="weui-btn weui-btn_primary" href="javascript:" id="up">提交</a>
-            </div>
-        </div>
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__bd">
+						<div class="weui-uploader">
+							<div class="weui-uploader__hd">
+								<p class="weui-uploader__title">选择本地图片</p>
+							</div>
+							<div class="weui-uploader__bd">
+								<ul class="weui-uploader__files" id="uploaderFiles">
+								</ul>
+								<div class="weui-uploader__input-box">
+									<input id="uploaderInput" class="weui-uploader__input"
+									       type="file" accept="image/*" multiple/>
+									<input id="img_str" type="hidden" value=""/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="weui-btn-area">
+				<a class="weui-btn weui-btn_primary" href="javascript:" id="up">提交</a>
+			</div>
+		</div>
 
-        <!-- loading toast -->
-        <div id="loadingToast" style="display:none;">
-            <div class="weui-mask_transparent"></div>
-            <div class="weui-toast">
-                <i class="weui-loading weui-icon_toast"></i>
-                <p class="weui-toast__content">数据加载中</p>
-            </div>
-        </div>
-    </div>
+		<!-- loading toast -->
+		<div id="loadingToast" style="display:none;">
+			<div class="weui-mask_transparent"></div>
+			<div class="weui-toast">
+				<i class="weui-loading weui-icon_toast"></i>
+				<p class="weui-toast__content">数据加载中</p>
+			</div>
+		</div>
+	</div>
 </main>
 <script type="text/javascript">
     $loadingToast = $('#loadingToast');
@@ -166,7 +171,7 @@
         $gallery.on("click", function(){
             $gallery.fadeOut(100);
         });
-        $("#up").on("click", function(){
+        $("#up").on("click", function(){    //提交
             $loadingToast.fadeIn(100);
             // console.log("length:"+$('input[type=file]:hidden').length);
             var formData = new FormData();
@@ -186,10 +191,12 @@
 	    	    contentType: false,  
 	    	    processData: false,  
 	    	    success: function (returndata) {
-		            SystemUtils.showToast(returndata.info);
+		            //SystemUtils.showToast(returndata.info);
+		            SystemUtils.showToast("上传成功");
 	    	    },
 	    	    error: function (returndata) {
-		            SystemUtils.showToast(returndata.info);
+		            //SystemUtils.showToast(returndata.info);
+		            SystemUtils.showToast("网络异常，请检查网络连接！");
 	    	    }
 	    	});
 	    	setTimeout(function () {
@@ -216,6 +223,8 @@
 	            + seperator2 + date.getSeconds();
 	    return currentdate;
 	}
+
+
 </script>
 </body>
 </html>

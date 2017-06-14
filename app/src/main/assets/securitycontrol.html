@@ -67,58 +67,69 @@
 </main>
 
 <script>
-  // loading
-    $url = SystemUtils.getServerUrl()+"document/type/getchild/id/54";
+	var urlinfo=window.location.href; //获取当前页面的url
+	var id=urlinfo.split("=")[1];//对获得的参数字符串按照“=”进行分割
+
+	// loading
     $loadingToast = $('#loadingToast');
-    //$toast = $('#toast');
     $(function(){
         if ($loadingToast.css('display') != 'none') return;
-
         $loadingToast.fadeIn(100);
     });
-  $(function () {
-    $loadingToast.fadeIn(100);
-    setTimeout(function () {
-        $("#loadingToast").fadeOut(100);
-    }, 500);
 
-    $.ajax({
-      // 获得文件列表
-      url: $url,
-        type: "get",
-        // data:{"columns[0][searchable]":true,"columns[0][data]":"suffix","search[value]":"doc"},
-        // type: "get",
-        success: function (filesinfo) {
-            //console.log(filesinfo);
-
-            var obj = eval(filesinfo);
-            //console.log(obj);
-
-            if(obj.data.length<=0){
-              document.querySelector(".weui-cells").innerHTML +=
-                    "<div class='weui-cell'>"+
-                        "<div class='weui-cell__bd'>"+
-                            "<p>暂无可下载的文件</p>"+
-                        "</div>"+
-                  "</div>";
-            }
-            for (var i = 0; i < obj.data.length ; i++ ) {
-              document.querySelector(".weui-cells").innerHTML +=
-                "<a class='weui-cell weui-cell_access' href='secondtag.html?id="+obj.data[i].iddoctype+"'>"+
-                  "<div class='weui-cell__bd'>"+
-                    "<p>"+obj.data[i].iddoctype+" "+obj.data[i].name+"</p>"+
-                  "</div>"+
-                  "<div class='weui-cell__ft'>"+
-                  "</div>"+
-                "</a>";
-            }
-        },
-        error: function (error) {
-            //console.log(error);
-            SystemUtils.showToast("网络异常，请检查网络连接！");
-        }
+    $(function(){
+        //查询数据库
+        queryDatabase(id);
+        setTimeout(function () {
+            $loadingToast.fadeOut(100);
+        }, 500);
     });
-  });
+
+    function queryDatabase(typeid){
+		SystemUtils.consolelog("查询前端数据库 in localdrawings!"+typeid);
+		//打开数据库
+		var smartsite_db = window.openDatabase('smartsite', '1.0', 'smartsite DB', 2 * 1024 * 1024);
+		//查询数据（目录）
+		smartsite_db.transaction(function(tx){
+			//tx.executeSql('SELECT * FROM localdataset where name like ? ', ['%控制%'], function (tx, results) {
+			tx.executeSql('SELECT category.iddoctype AS childid,category.name AS name,COUNT(doctype.iddoctype) AS childnum FROM (SELECT t1.* FROM doctype AS t1  LEFT JOIN doctype AS t2 ON t1.fatherid=t2.iddoctype WHERE t1.fatherid=?) AS category LEFT JOIN doctype ON category.iddoctype = doctype.fatherid GROUP BY category.iddoctype', [typeid], function (tx, results) {
+				SystemUtils.consolelog("results.rows.length:"+results.rows.length);
+				var len = results.rows.length;
+				for (var i = 0; i < len; i++) {
+					SystemUtils.consolelog("childid:"+results.rows.item(i).childid+" &name:"+results.rows.item(i).name+" &childnum:"+results.rows.item(i).childnum);
+					//若有子类别，则继续跳转至当前html
+                    document.querySelector(".weui-cells").innerHTML +=
+                        "<a class='weui-cell weui-cell_access' href='securitycontrol.html?id="+results.rows.item(i).childid+"'>"+
+                            "<div class='weui-cell__bd'>"+
+                                "<p>"+results.rows.item(i).childid+" "+results.rows.item(i).name+"</p>"+
+                            "</div>"+
+                            "<div class='weui-cell__ft'>"+
+                            "</div>"+
+                        "</a>";
+				}
+			});
+		});
+		//查询数据（文件）
+		smartsite_db.transaction(function(tx){
+			tx.executeSql('SELECT * FROM file WHERE iddoctype = ? ', [typeid], function (tx, results) {
+				var len = results.rows.length;
+				for (var i = 0; i < len; i++) {
+					document.querySelector(".weui-cells").innerHTML +=
+						"<a class='weui-cell weui-cell_access' onclick=openFile('"+results.rows.item(i).savename+"');>"+
+							"<div class='weui-cell__bd'>"+
+								"<p>"+results.rows.item(i).idfile+" "+results.rows.item(i).name+"</p>"+
+							"</div>"+
+							"<div class='weui-cell__ft'>打开"+
+							"</div>"+
+						"</a>";
+				}
+			});
+		});
+	}
+
+	function openFile(keys) {
+		SystemUtils.startDownloadActivity(keys);
+	}
 
 </script>
 </body>

@@ -15,9 +15,9 @@
 <body>
 <main>
 	<div class="page">
-	    <div class="page__hd">
+	    <!--<div class="page__hd">
 	        <h1 class="page__title">平板信息</h1>
-	    </div>
+	    </div>-->
 	    <div class="page__bd">
 	        <div class="weui-cells__title">点击查看设备登记信息</div>
 	        <div class="weui-cells">
@@ -46,11 +46,13 @@
 		    async: false,
 		    success: function (padsinfo) {
 		    	var obj = eval('(' + padsinfo + ')');
-		  		if (obj.length<=0) {
-		  			$div_main = $("<div class='col s12 card hoverable'></div>");
-		  			$div = $("<p>该用户暂无档案！</p>");
-		  			$div_main.append($div);
-		  			$("main").append($div_main);
+		  		if (obj.recordsTotal<=0) {
+		  			document.querySelector(".weui-cells").innerHTML +=
+			            "<div class='weui-cell'>"+
+			                "<div class='weui-cell__bd'>"+
+			                    "<p>暂无本地文件</p>"+
+			                "</div>"+
+				        "</div>";
 		  		}
 		  		else{
 					for (var i = 0; i < obj.recordsTotal ; i++ ) {

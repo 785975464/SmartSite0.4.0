@@ -36,12 +36,12 @@
 	var padcol=urlinfo.split("=")[1];//对获得的参数字符串按照“=”进行分割
 	$loadingToast = $('#loadingToast');
 	//$url = SystemUtils.getServerUrl()+"monitor/staff/getstafflog/id/"+padcol;
-	$url = SystemUtils.getServerStafflogUrl()+"/"+padcol;
+	$stafflogurl = SystemUtils.getServerStafflogUrl()+"/"+padcol;
 
 	$(function () {
 		$loadingToast.fadeIn(100);
 		$.ajax({
-		    url: $url,
+		    url: $stafflogurl,
 		    type: "get",
 		    async: false,
 		    success: function (recordsinfo) {
@@ -54,16 +54,14 @@
 			                "</div>"+
 				        "</div>";
 		  		}
-		  		else{
-					for (var i = 0; i < obj.data.length ; i++ ) {
-						document.querySelector(".weui-cells").innerHTML +=
-							"<div class='weui-cell'>"+
-								"<div class='weui-cell__bd'>"+
-									"<p>"+"文件名称："+obj.data[i].name+" 阅读次数："+obj.data[i].times+"次 阅读时长："+obj.data[i].duration+"</p>"+
-								"</div>"+
-								//"<div class='weui-cell__ft'>"+
-							"</div>";
-					}
+				for (var i = 0; i < obj.data.length ; i++ ) {
+					document.querySelector(".weui-cells").innerHTML +=
+						"<div class='weui-cell'>"+
+							"<div class='weui-cell__bd'>"+
+								"<p>"+"文件名称："+obj.data[i].name+" 阅读次数："+obj.data[i].times+"次 阅读时长："+obj.data[i].duration+"</p>"+
+							"</div>"+
+							//"<div class='weui-cell__ft'>"+
+						"</div>";
 				}
 		    },
 		    error: function (error) {
@@ -74,8 +72,6 @@
 			$("#loadingToast").fadeOut(100);
 		}, 500);
 	});
-
-
 </script>
 </body>
 </html>

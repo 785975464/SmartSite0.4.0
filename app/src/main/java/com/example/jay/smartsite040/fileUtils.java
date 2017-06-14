@@ -357,6 +357,7 @@ public class fileUtils {
 					//Log.e("http", file.getName() );
 					if (file.getName().equals(photolist[i])) {
 						file.delete();        // 删除指定文件
+						new systemUtils(mContext).broadcastPhotoInfo(Uri.fromFile(file));	//通知SD卡重新加载
 						count++;
 						break;
 //					return 1;

@@ -21,12 +21,39 @@
 	            <a class="weui-btn weui-btn_primary" href="javascript:" onclick="clickOnHtml();">拍照</a>
 	        </div>
 	    </div>
+		<div id="dialogs">
+			<!--BEGIN dialog2-->
+			<div class="js_dialog" id="iosDialog2" style="display: none;">
+				<div class="weui-mask"></div>
+				<div class="weui-dialog">
+					<div class="weui-dialog__bd">打开权限</div>
+					<div class="weui-dialog__ft">
+						<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary">好的</a>
+					</div>
+				</div>
+			</div>
+			<!--END dialog2-->
+		</div>
 	</div>
 </main>
 <script type="text/javascript">
-	//html的点击事件，并通过"window.demo.clickOnAndroid"触发android中的clickOnAndroid方法
+	$(function(){
+        var $iosDialog2 = $('#iosDialog2');
+        $('#dialogs').on('click', '.weui-dialog__btn', function(){
+            $(this).parents('.js_dialog').fadeOut(200);
+            //SystemUtils.showToast("打开摄像头权限");
+            location.href="file:///android_asset/index.html";
+        });
+    });
+
+	//当摄像头权限未打开时，由系统触发
+	function cameraDiabled(){
+		$("div.weui-dialog__bd").html("请在平板【设置】中打开摄像头权限！");
+		$('#iosDialog2').fadeIn(200);
+	}
+	//html的点击事件，并通过"window.AndroidUtils.getAndroidPhoto"getAndroidPhoto
     function clickOnHtml () {
-        var fileName = window.demo.clickOnAndroid();
+        var fileName = window.AndroidUtils.getAndroidPhoto();
     }
 
     function showPhotoMessage(obj,flag){
