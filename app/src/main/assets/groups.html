@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>施工班组</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+  <script type="text/javascript" src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+
+  <style type="text/css">
+  .tablehead{
+      border-top: solid 1px;
+      line-height: 2em;
+      font: bold 1.1em sans-serif;
+  }
+  .weui-flex{
+      border-bottom: solid 1px;
+  }
+  .hiddenelement{
+    display: none;
+  }
+  .querybutton{
+      text-align: right;
+      margin-right: 2em;
+  }
+  </style>
+</head>
+<body>
+
+<main>
+  <div class="page">
+      <div class="page__hd" >
+          <h1 class="page__title">班组信息</h1>
+
+      </div>
+      <div class="page__bd">
+          <div class="weui-cells__title">查看班组信息</div>
+          <div class="weui-cells">
+
+          </div>
+      </div>
+  </div>
+  <div class="page__bd page__bd_spacing stafftable" style="display:none;">
+      <div class="weui-flex tablehead" style="text-align:center;">
+          <div class="weui-flex__item hiddenelement"><div class="placeholder">id</div></div>
+          <div class="weui-flex__item"><div class="placeholder">序号</div></div>
+          <div class="weui-flex__item"><div class="placeholder">姓名</div></div>
+          <div class="weui-flex__item"><div class="placeholder">性别</div></div>
+          <!--<div class="weui-flex__item"><div class="placeholder">身份证号码</div></div>-->
+          <div class="weui-flex__item"><div class="placeholder">出生年月</div></div>
+          <div class="weui-flex__item"><div class="placeholder">学历</div></div>
+          <div class="weui-flex__item"><div class="placeholder">籍贯</div></div>
+      </div>
+  </div>
+        <!-- loading toast -->
+  <div id="loadingToast" style="display:none;">
+      <div class="weui-mask_transparent"></div>
+      <div class="weui-toast">
+          <i class="weui-loading weui-icon_toast"></i>
+          <p class="weui-toast__content">数据加载中</p>
+      </div>
+  </div>
+</main>
+
+<script>
+    var urlinfo=window.location.href;   //获取当前页面的url
+	var id=urlinfo.split("=")[1];       //对获得的参数字符串按照“=”进行分割
+	$staffurl = SystemUtils.getStaffUrl();
+	$loadingToast = $('#loadingToast');
+	$(function(){
+        setContent(id);         //根据id设置展示内容
+    });
+
+    function setContent(id){
+        if(id==0){
+            document.querySelector(".weui-cells").innerHTML +=
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+1+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>普通工种</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>"+
+                    "</div>"+
+                "</a>"+
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+2+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>特殊工种</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>"+
+                    "</div>"+
+                "</a>";
+        }
+        else if(id==1){
+            document.querySelector(".weui-cells").innerHTML +=
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+11+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>完成安全培训人数</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>100"+
+                    "</div>"+
+                "</a>"+
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+12+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>未完成安全培训人数</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>3"+
+                    "</div>"+
+                "</a>";
+        }
+        else if(id==2){
+            document.querySelector(".weui-cells").innerHTML +=
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+21+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>取得相关证件人数</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>100"+
+                    "</div>"+
+                "</a>"+
+                "<a class='weui-cell weui-cell_access' href='groups.html?id="+22+"'>"+
+                    "<div class='weui-cell__bd'>"+
+                        "<p>未取得相关证件人数</p>"+
+                    "</div>"+
+                    "<div class='weui-cell__ft'>3"+
+                    "</div>"+
+                "</a>";
+        }
+        else{
+            $(".stafftable").css("display","block");    //展示table
+            setTableContent();
+        }
+    }
+
+    function setTableContent(){
+        $loadingToast.fadeIn(100);
+	    $.ajax({
+	    	// 获得用户列表
+	    	url: $staffurl,
+	        type: "get",
+	        success: function (filesinfo) {
+	          	var obj = eval("("+filesinfo+")");
+	          	if(obj.recordsTotal<=0){
+	          		document.querySelector(".stafftable").innerHTML +=
+	          	      	'<div class="weui-flex">'+
+				        	'<div class="weui-flex__item"><div class="placeholder">暂无用户信息</div></div>'+
+				        '</div>';
+	          	}
+	          	else{
+		          	for (var i = 0; i < obj.recordsFiltered ; i++ ) {
+		          	    // console.log(obj.data[i]);
+		          	    document.querySelector(".stafftable").innerHTML +=
+			              	'<div class="weui-flex" style="text-align:center;">'+
+					        	'<div class="weui-flex__item hiddenelement"><div class="placeholder">'+obj.data[i].id+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+(i+1)+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].name+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].gender+'</div></div>'+
+					        	//'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].credit+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].birthday+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].scholar+'</div></div>'+
+					        	'<div class="weui-flex__item"><div class="placeholder">'+obj.data[i].hometown+'</div></div>'+
+					        '</div>';
+		          	}
+	          	}
+
+	        },
+	        error: function (error) {
+	            SystemUtils.showToast("网络异常，请检查网络连接！");
+	        }
+	    });
+	    setTimeout(function () {
+	        $("#loadingToast").fadeOut(100);
+	    }, 500);
+    }
+</script>
+</body>
+</html>

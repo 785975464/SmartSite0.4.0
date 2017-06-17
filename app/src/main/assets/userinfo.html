@@ -45,8 +45,9 @@
 		$loadingToast.fadeIn(100);
 		$.ajax({
 		    url: $url,
+		    timeout: 500,
 		    type: "get",
-		    async: false,
+		    async: true,
 		    success: function (padsinfo) {
 		    	var obj = eval('(' + padsinfo + ')');
 		  		if (obj.recordsTotal<=0) {

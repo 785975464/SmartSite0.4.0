@@ -1,9 +1,7 @@
-package com.example.jay.smartsite040;
+package com.example.jay.smartsite;
 
 import android.os.Environment;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;

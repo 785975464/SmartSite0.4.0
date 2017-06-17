@@ -9,7 +9,7 @@
     android:paddingRight="0dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jay.smartsite040.MainActivity"
+    tools:context="com.example.jay.smartsite.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <!--<TextView-->

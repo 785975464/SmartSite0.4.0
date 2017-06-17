@@ -1,4 +1,4 @@
-package com.example.jay.smartsite040;
+package com.example.jay.smartsite;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -29,7 +28,6 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

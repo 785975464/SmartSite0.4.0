@@ -1,4 +1,4 @@
-package com.example.jay.smartsite040;
+package com.example.jay.smartsite;
 
 import org.junit.Test;
 

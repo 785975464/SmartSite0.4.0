@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>查询结果</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/weui.css">
+ <link rel="stylesheet" type="text/css" href="file:///android_asset/css/smartsite.css">
+  <script type="text/javascript" src="file:///android_asset/jquery/jquery-1.7.2.min.js"></script>
+
+  <style type="text/css">
+  .page__title{
+  	  display: inline;
+	  margin:120px 0px !important;
+	  font-size: 18px;
+  }
+	  .page__hd{
+	    padding:20px 0px 5px 0px;
+	    font-size: 18px;
+	    font-family: "arial", "Microsoft Yahei", "微软雅黑";
+	  }
+  #lookmore{
+  	  height:1.6rem;
+  	  line-height:1.6rem;
+  	  margin: 0.67rem auto;
+  	  float:right;
+  }
+	.querybutton{
+	  text-align: right;
+	  margin-right: 2em;
+	}
+	.page__hd .weui-cell__bd p{
+	  /*margin-top: .77em;
+	  margin-bottom: .3em;
+	  padding-left: 15px;*/
+	  padding-right: 15px;
+	  color: #999999;
+	  font-size: 14px;
+	}
+
+  </style>
+</head>
+<body>
+<main>
+	<div class="page">
+	    <div class="page__hd" >
+	        <!--<p class="page__title">本地图纸列表123</p>-->
+
+	    </div>
+	    <div class="page__bd">
+	        <div class="weui-cells__title"></div>
+	        <div class="weui-cells">
+	        </div>
+	    </div>
+	</div>
+        <!-- loading toast -->
+    <div id="loadingToast" style="display:none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">数据加载中</p>
+        </div>
+    </div>
+</main>
+
+<script>
+	var urlinfo=window.location.href;       //获取当前页面的url
+	var params=urlinfo.substring(urlinfo.indexOf("?")+1);   //将参数进行分割，id=60&startdate=2017-05-17&enddate=2017-06-17
+	var array=params.split("&");            //得到参数数组
+	var id=array[0].split("=")[1];          //对获得的参数字符串按照“=”进行分割
+	var startdate=array[1].split("=")[1];   //开始时间
+	var enddate=array[2].split("=")[1];     //结束时间
+	var smartsite_db = window.openDatabase('smartsite', '1.0', 'smartsite DB', 2 * 1024 * 1024);    //打开数据库
+
+	// loading
+    $loadingToast = $('#loadingToast');
+    $(function(){
+        if ($loadingToast.css('display') != 'none') return;
+        $loadingToast.fadeIn(100);
+    });
+
+    $(function(){
+        //setPageTitle(id);       //设置标题
+        queryDatabase(id);      //查询数据库
+        setTimeout(function () {
+            $loadingToast.fadeOut(100);
+        }, 500);
+    });
+
+	//function setPageTitle(typeid){
+	//	//查询数据（设置标题）
+	//	smartsite_db.transaction(function(tx){
+	//		tx.executeSql('SELECT * FROM doctype WHERE iddoctype = ? ', [typeid], function (tx, results) {
+	//			var len = results.rows.length;
+	//			if(len>0){
+	//				//SystemUtils.consolelog("in mylocalfiles name:"+results.rows.item(0).name);  //获得标题
+	//				//$("title").html(results.rows.item(0).name);
+	//				window.AndroidUtils.setAndroidTitle(results.rows.item(0).name);
+	//				$(".weui-cells__title").html("查看"+results.rows.item(0).name+"列表：");
+	//			}
+	//		});
+	//	});
+	//}
+
+
+    function queryDatabase(typeid){
+		SystemUtils.consolelog("查询前端数据库 in localdrawings!"+typeid);
+		SystemUtils.consolelog("startdate:"+startdate+" &enddate:"+enddate);
+		//查询数据（文件）
+		smartsite_db.transaction(function(tx){
+			tx.executeSql('SELECT * FROM file WHERE iddoctype = ? AND datetime >= ? AND datetime <= ? ', [typeid,startdate+" 00:00:00",enddate+" 23:59:59"], function (tx, results) {
+				var len = results.rows.length;
+				SystemUtils.consolelog("区间查询结果len:"+len);
+				if(len<1){
+					document.querySelector(".weui-cells").innerHTML +=
+			            "<div class='weui-cell'>"+
+			                "<div class='weui-cell__bd'>"+
+			                    "<p>暂无本地文件</p>"+
+			                "</div>"+
+				        "</div>";
+				}
+				else{
+					for (var i = 0; i < len; i++) {
+						document.querySelector(".weui-cells").innerHTML +=
+							"<a class='weui-cell weui-cell_access' onclick=openFile('"+results.rows.item(i).savename+"');>"+
+								"<div class='weui-cell__bd'>"+
+									"<p>"+results.rows.item(i).idfile+" "+results.rows.item(i).name+"</p>"+
+								"</div>"+
+								"<div class='weui-cell__ft'>打开"+
+								"</div>"+
+							"</a>";
+					}
+				}
+			});
+		});
+	}
+
+	function openFile(keys) {
+		SystemUtils.startDownloadActivity(keys);
+	}
+
+	function showmyquerybtn() {
+		if ($(".weui-panel__bd").css("display")=="none") {
+			$(".weui-panel__bd").css("display","block");
+			$("#mycellft").removeClass("weui-cell__ft_down");
+			$("#mycellft").addClass("weui-cell__ft_up");
+		}
+		else{
+			$(".weui-panel__bd").css("display","none");
+			$("#mycellft").removeClass("weui-cell__ft_up");
+			$("#mycellft").addClass("weui-cell__ft_down");
+		}
+	}
+
+
+</script>
+</body>
+</html>

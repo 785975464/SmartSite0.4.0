@@ -56,6 +56,11 @@
                 </div>
             </div>
         </div>
+        <div class="page__bd">
+            <div class="weui-btn-area">
+                <a class="weui-btn weui-btn_warn" href="javascript:" onclick="clearLocalCache();">清空本地缓存</a>
+            </div>
+        </div>
     </div>
 </main>
 </body>
@@ -65,11 +70,13 @@
     $loadingToast = $('#loadingToast');
     $(function(){
 		$loadingToast.fadeIn(100);
+		$("#pad_col").text(SystemUtils.getAndroidPadCol());
         if(SystemUtils.isConnectingToInternet()==true){     //网络已连接，检查设备状态
             $.ajax({
                 url: $url,
+                timeout: 500,
                 type: "get",
-                async: false,       //同步执行
+                async: true,       //false为同步执行
                 success: function (padinfo) {
                     if(padinfo.info=="not found"){
                         SystemUtils.showToast("设备未注册，请联系管理员进行注册！");
@@ -96,6 +103,11 @@
                 },
                 error: function (error) {
                     SystemUtils.showToast("网络异常，请检查网络连接！");
+                    $("#pad_id").text(SystemUtils.getAndroidDatabaseId());
+                    $("#pad_name").text(SystemUtils.getAndroidName());
+                    $("#pad_position").text(SystemUtils.getAndroidPosition());
+                    $("#pad_level").text(SystemUtils.getAndroidLevel());
+                    $("#pad_idposition").text(SystemUtils.getAndroidIdPosition());
                 }
             });
         }
@@ -112,5 +124,9 @@
         }, 500);
     });
 
+    function clearLocalCache(){
+        FileUtils.emptyLocalFile();
+        SystemUtils.showToast("清除成功");
+    }
 </script>
 </html>

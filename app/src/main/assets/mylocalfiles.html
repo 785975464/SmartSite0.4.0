@@ -26,16 +26,103 @@
   	  margin: 0.67rem auto;
   	  float:right;
   }
+	.querybutton{
+	  text-align: right;
+	  margin-right: 2em;
+	}
+	.page__hd .weui-cell__bd p{
+	  /*margin-top: .77em;
+	  margin-bottom: .3em;
+	  padding-left: 15px;*/
+	  padding-right: 15px;
+	  color: #999999;
+	  font-size: 14px;
+	}
+	.weui-panel__bd{
+	  display:none;
+	  border:solid 1px #D9D9D9;
+	  margin: 0px 1em 1em 1em;
+	}
+
+	.weui-cell__ft_down,.weui-cell__ft_up{
+	  padding-right: 13px;
+	  position: relative;
+	}
+	.weui-cell__ft_down:after {
+	  content: " ";
+	  display: inline-block;
+	  height: 6px;
+	  width: 6px;
+	  border-width: 0px 2px 2px 0;
+	  border-color: #C8C8CD;
+	  border-style: solid;
+	  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+	  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+	  position: relative;
+	  top: -2px;
+	  position: absolute;
+	  top: 50%;
+	  margin-top: -4px;
+	  right: 2px;
+	}
+	.weui-cell__ft_up:after {
+	  content: " ";
+	  display: inline-block;
+	  height: 6px;
+	  width: 6px;
+	  border-width: 2px 0px 0px 2px;
+	  border-color: #C8C8CD;
+	  border-style: solid;
+	  -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+	  transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+	  position: relative;
+	  top: -2px;
+	  position: absolute;
+	  top: 50%;
+	  margin-top: -4px;
+	  right: 2px;
+	}
+	/**/
+	#querypanel{
+	  display: none;
+	}
   </style>
 </head>
 <body>
 <main>
 	<div class="page">
-	    <!--<div class="page__hd" >-->
+	    <div class="page__hd" >
 	        <!--<p class="page__title">本地图纸列表123</p>-->
-	        <!--<a href="drawing.html" class="weui-cell_access weui-cell_link" id="lookmore">查看服务器图纸</a>-->
-	        <!-- <p class="page__desc">列表</p> -->
-	    <!--</div>-->
+		    <div class="weui-panel weui-panel_access" id="querypanel">
+			    <a class="weui-cell weui-cell_access" href="javascript:void(0);" onclick="showmyquerybtn();">
+				    <div class="weui-cell__bd">
+					    <p>按日期查询</p>
+				    </div>
+				    <div class="weui-cell__ft_down" id="mycellft">
+				    </div>
+			    </a>
+			    <div class="weui-panel__bd">
+				    <div class="weui-media-box__bd">
+					    <div class="weui-cell">
+						    <div class="weui-cell__hd"><label for="" class="weui-label">开始时间</label></div>
+						    <div class="weui-cell__bd">
+							    <input class="weui-input" type="date" value="" placeholder="" id="startdate"/>
+						    </div>
+						    <!-- </div>
+							<div class="weui-cell"> -->
+						    <div class="weui-cell__hd"><label for="" class="weui-label">结束时间</label></div>
+						    <div class="weui-cell__bd">
+							    <input class="weui-input" type="date" value="" placeholder="" id="enddate"/>
+						    </div>
+					    </div>
+				    </div>
+				    <div class="querybutton">
+					    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary" onclick="queryIntervalFiles();">查询</a>
+					    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default" onclick="clearQueryInfo();">取消</a>
+				    </div>
+			    </div>
+		    </div>
+	    </div>
 	    <div class="page__bd">
 	        <div class="weui-cells__title"></div>
 	        <div class="weui-cells">
@@ -110,8 +197,17 @@
 			                "</div>"+
 			            "</a>";
 				}
+				SystemUtils.consolelog("目录len:"+len);
+				if(totallength<1){      //没有目录
+					$("#querypanel").css("display","block");
+				}
+				else{
+					$("#querypanel").css("display","none");
+				}
 			});
 		});
+
+
 		//查询数据（文件）
 		smartsite_db.transaction(function(tx){
 			tx.executeSql('SELECT * FROM file WHERE iddoctype = ? ', [typeid], function (tx, results) {
@@ -141,6 +237,43 @@
 
 	function openFile(keys) {
 		SystemUtils.startDownloadActivity(keys);
+	}
+
+	function showmyquerybtn() {
+		if ($(".weui-panel__bd").css("display")=="none") {
+			$(".weui-panel__bd").css("display","block");
+			$("#mycellft").removeClass("weui-cell__ft_down");
+			$("#mycellft").addClass("weui-cell__ft_up");
+		}
+		else{
+			$(".weui-panel__bd").css("display","none");
+			$("#mycellft").removeClass("weui-cell__ft_up");
+			$("#mycellft").addClass("weui-cell__ft_down");
+		}
+	}
+
+	function queryIntervalFiles(){      //根据时间区间查询文件
+		var startdate,enddate;
+		var startdate=$("#startdate").val();
+		var enddate=$("#enddate").val();
+		if(startdate==undefined || startdate==""){
+			startdate="2000-01-01";
+		}
+		if(enddate==undefined || enddate==""){
+			enddate="2099-12-31";
+		}
+		if(startdate<=enddate){
+			location.href="file:///android_asset/queryresults.html?id="+id+"&startdate="+startdate+"&enddate="+enddate;
+		}
+		else{
+			SystemUtils.showToast("日期选择错误！");
+		}
+	}
+
+	function clearQueryInfo(){      //清空查询信息
+		$("#startdate").val("");
+		$("#enddate").val("");
+		showmyquerybtn();
 	}
 </script>
 </body>

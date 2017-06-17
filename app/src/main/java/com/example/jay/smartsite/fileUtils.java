@@ -1,12 +1,9 @@
-package com.example.jay.smartsite040;
+package com.example.jay.smartsite;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
@@ -248,6 +245,14 @@ public class fileUtils {
         recordeditor.clear();		//清空
         recordeditor.commit();
     }
+
+	@JavascriptInterface
+	public void emptyLocalFile(){					//清空本地文件缓存记录
+		SharedPreferences filePreferences = mContext.getSharedPreferences("filelist", Context.MODE_PRIVATE);
+		SharedPreferences.Editor fileeditor = filePreferences.edit();		//获取编辑器
+		fileeditor.clear();
+		fileeditor.commit();
+	}
 
 	@JavascriptInterface
 	public String deleteLocalFile(String keys){		//删除本地文件，0表示未找到文件，1表示正常删除，-1表示异常

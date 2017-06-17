@@ -44,7 +44,7 @@
             </div>
             <p class="weui-grid__label">项目简介</p>
         </a>
-	    <a href="" class="weui-grid">
+	    <a href="groups.html?id=0" class="weui-grid">
 		    <div class="weui-grid__icon">
 			    <img src="./images/workgroups.png" alt="">
 		    </div>
@@ -149,57 +149,43 @@
 </main>
 
 <script type="text/javascript">
-    $url = SystemUtils.getServerRecordUrl();    // 获得记录上传路径 /monitor/staff/add
-    $fileurl = SystemUtils.getServerFileUrl();  // 获得文件列表 /document/file/get
-    //$typeurl = SystemUtils.getServerTypeUrl();  //获得文档一级分类列表
+	$registerurl = SystemUtils.getRegisterUrl();        //检查是否注册（用于验证网络是否连接）
+    $url = SystemUtils.getServerRecordUrl();            // 获得记录上传路径 /monitor/staff/add
+    $fileurl = SystemUtils.getServerFileUrl();          // 获得文件列表 /document/file/get
+    //$typeurl = SystemUtils.getServerTypeUrl();        //获得文档一级分类列表
     $typelisturl = SystemUtils.getServerTypeListUrl();  //获得文档所有分类级别列表
     var fileArray = new Array();    //文件路径
     var nameArray = new Array();    //文件名
 
-//	//创建数据库
-//	var smartsite_db = window.openDatabase('smartsite', '1.0', 'smartsite DB', 2 * 1024 * 1024);
-//	//创建一个数据表
-//	var success = function(tx,results){     //成功回调
-//	    SystemUtils.showToast(results);
-//	};
-//	var error = function(tx, err){          //失败回调
-//	    SystemUtils.showToast(err);
-//	};
-//	var sql = 'CREATE TABLE foo (id unique, text)';
-//	//var sql = "CREATE TABLE IF NOT EXISTS todo(ID INTEGER PRIMARY KEY ASC, todo TEXT, added_on DATETIME)";
-//	smartsite_db.transaction(function(tx){
-//	    tx.executeSql(sql,[],success,error);
-//	});
-//	//插入数据
-//	smartsite_db.transaction(function(tx){
-//	    tx.executeSql('INSERT INTO foo (id, text) VALUES (1, "test")',[],success,error);
-//	});
-//	//查询数据
-//	tx.executeSql('SELECT * FROM foo', [], function (tx, results) {
-//	    var len = results.rows.length, i;
-//	    for (i = 0; i < len; i++) {
-//	        SystemUtils.showToast(results.rows.item(i).text);
-//	    }
-//	});
-//	//删除数据
-//	test_db.transaction(function(tx){
-//		tx.executeSql("DELETE FROM todo foo ID=?", [id],success,error);
-//    });
-
-
 	$(function(){
-
 		if(SystemUtils.isConnectingToInternet()==true){     //在联网状态下
-			$("#myintroduction").attr("href",SystemUtils.getServerIntroductionUrl());
-			if(window.openDatabase){
-				//console.log("浏览器支持DataBase");
-				//SystemUtils.showToast("浏览器支持DataBase！");
-				buildLocalDatabase();
-			}
-			synchRecords();         //同步记录（异步操作）
-			downloadAllFiles();     //下载文件（同步操作）
-			//queryDatabase();        //查询数据库
-
+			$.ajax({                // 同步记录
+				url: $registerurl,
+				timeout: 500,       //超时时间设置，单位毫秒
+			    type: "get",
+			    async: true,        //async必须设置为同步ture，timeout才生效
+			    success: function (info) {
+	                SystemUtils.consolelog("success: "+info.success);   //返回成功
+	                $("#myintroduction").attr("href",SystemUtils.getServerIntroductionUrl());
+					if(window.openDatabase){
+						//SystemUtils.showToast("浏览器支持DataBase！");
+						buildLocalDatabase();
+					}
+					synchRecords();         //同步记录（异步操作）
+					downloadAllFiles();     //下载文件（同步操作）
+			    },
+			    error: function (XMLHttpRequest,status) {
+			        SystemUtils.consolelog("你的网络连接存在异常！ status:"+status);
+			        $("#myintroduction").attr("href",SystemUtils.getLocalErrorPage());
+			        if(status=='timeout'){
+			            SystemUtils.showToast("你的服务器响应超时！");
+			        }
+			        else{
+			            SystemUtils.showToast("网络异常，请检查网络连接！");
+			        }
+			        return;
+			    }
+			});
 		}
 		else{
 			$("#myintroduction").attr("href",SystemUtils.getLocalErrorPage());
@@ -217,16 +203,24 @@
 			return;
 		}
         var imei=SystemUtils.getAndroidPadCol();
-        $.ajax({        // 同步记录
+        $.ajax({            // 同步记录
 			url: $url,
+			//timeout: 500,  //超时时间设置，单位毫秒
 			data: {"log": arrayObj,"imei":imei},
 		    type: "post",
+		    //async: true,    //async必须设置为同步ture，timeout才生效
 		    success: function (info) {
                 //SystemUtils.showToast("success: "+info.info);
                 FileUtils.deleteLocalRecords();
 		    },
-		    error: function (error) {
-		        SystemUtils.showToast("网络异常，请检查网络连接！");
+		    error: function (XMLHttpRequest,status) {
+		        SystemUtils.consolelog("同步记录请求错误 status:"+status);
+		        if(status=='timeout'){
+		            SystemUtils.showToast("同步记录请求服务器响应超时！");
+		        }
+		        else{
+		            SystemUtils.showToast("同步记录请求网络异常，请检查网络连接！");
+		        }
 		    }
 		});
     }
@@ -234,6 +228,7 @@
 	function downloadAllFiles() {    //自动同步文件
 		$.ajax({
 			url: $fileurl,
+			//timeout: 1000, //超时时间设置，单位毫秒
 		    type: "get",
 		    async: false,   //false代表只有在等待ajax执行完毕后才执行后面语句
 		    success: function (filesinfo) {
@@ -243,25 +238,29 @@
 					nameArray.push(obj.data[i].name);
 				}
 		    },
-		    error: function (error) {
-		        SystemUtils.showToast("网络异常，请检查网络连接！");
+		    error: function (XMLHttpRequest,status) {
+		        SystemUtils.consolelog("同步文件列表请求错误 status:"+status);
+		        if(status=='timeout'){
+		            SystemUtils.showToast("同步文件列表请求服务器响应超时！");
+		        }
+		        else{
+		            SystemUtils.showToast("同步文件列表请求网络异常，请检查网络连接！");
+		        }
 		    }
 		});
-		//SystemUtils.showToast("开始下载！");
-		var array = FileUtils.getFileList();     //字符串
-        //var arrayObj = eval("("+array+")");
+		var array = FileUtils.getFileList();        //字符串
         var savename;
 		for(var i=0;i<fileArray.length;i++){
 			savename = fileArray[i].split("/")[1];
-			if(array.indexOf(savename)<0){   //未被下载
-				//SystemUtils.showToast(savename+"未被下载！");
-				downloadFile( SystemUtils.getDownloadURL()+fileArray[i] );
+			if(array.indexOf(savename)<0){          //未被下载
+				downloadFile( SystemUtils.getDownloadURL()+fileArray[i] );      //模拟下载
 				FileUtils.setFileInfo(nameArray[i],savename);
 			}
 		}
 	}
 
 	function downloadFile(fileName){        //模拟点击a标签进行文件下载
+		SystemUtils.consolelog("文件下载："+fileName)
 	    var link= $("<a href='"+fileName+"'></a>");
 		link.get(0).click();
 	}
@@ -277,63 +276,66 @@
 		var smartsite_db = window.openDatabase('smartsite', '1.0', 'smartsite DB', 2 * 1024 * 1024);
 		//创建一个数据表(iddoctype unique, name, fatherid, fathername, level)
 		var create_doctype_sql = 'CREATE TABLE IF NOT EXISTS doctype (iddoctype INTEGER  unique, name, fatherid INTEGER , fathername, level INTEGER )';
-		var create_file_sql = 'CREATE TABLE IF NOT EXISTS file (idfile INTEGER  unique, name, savename, savepath, iddoctype INTEGER , doctypename )';
-
+		var create_file_sql = 'CREATE TABLE IF NOT EXISTS file (idfile INTEGER  unique, name, datetime DATETIME, savename, savepath, iddoctype INTEGER , doctypename )';
 		smartsite_db.transaction(function(tx){
 			tx.executeSql("DROP TABLE IF EXISTS doctype",[]);      //每次联网时更新数据库doctype和file
 			tx.executeSql("DROP TABLE IF EXISTS file",[]);
 		    tx.executeSql(create_doctype_sql,[]);
 		    tx.executeSql(create_file_sql,[]);
-
-		    SystemUtils.consolelog("create local database success!");
+		    //SystemUtils.consolelog("create local database success!");
 		});
-		//var insertsql;
 		$.ajax({
             url: $typelisturl,
-            //url: $typeurl,
+            //timeout: 500, //超时时间设置，单位毫秒
             type: "get",
-            //async: false,
+            //async: true,    //async必须设置为同步ture，timeout才生效
             success: function (doctypelist) {
                 var obj = eval('(' + doctypelist + ')');
-                SystemUtils.consolelog("obj.recordsTotal:"+obj.recordsTotal);
                 if(obj.recordsTotal>0){
                     //将数据存入前端数据库
 					smartsite_db.transaction(function(tx){
 	                    for (var i = 0; i < obj.recordsTotal ; i++ ) {
-	                        //insertsql='INSERT INTO localdataset (iddoctype, name, fatherid, fathername, level) '+
-						    //    'VALUES ("'+doctypelist.data[i].iddoctype+'", "'+
-						    //    doctypelist.data[i].name+'", "'+doctypelist.data[i].fatherid+'", "'+
-						    //    doctypelist.data[i].fathername+'", "'+doctypelist.data[i].level+'")';
-							//tx.executeSql(insertsql,[],success,error);
-
 							tx.executeSql('INSERT INTO doctype (iddoctype, name, fatherid, fathername, level ) VALUES (?,?,?,?,?)',
 								[ obj.data[i].id, obj.data[i].name, obj.data[i].fatherid, obj.data[i].fathername, obj.data[i].level ], success, error);
 	                    }
 	                });
                 }
             },
-            error: function (error) {
-                SystemUtils.showToast("网络异常，请检查网络连接！");
-            }
+            error: function (XMLHttpRequest,status) {
+                SystemUtils.consolelog("存储文件类型请求错误 status:"+status);
+		        if(status=='timeout'){
+		            SystemUtils.showToast("存储文件类型请求服务器响应超时！");
+		        }
+		        else{
+		            SystemUtils.showToast("存储文件类型请求网络异常，请检查网络连接！");
+		        }
+		    }
         });
         //将服务器文件列表保存至本地
         $.ajax({
             url: $fileurl,
+            //timeout: 500,
             type: "get",
-            //async: false,
+            //async: true,    //async必须设置为同步ture，timeout才生效
             success: function (filesinfo) {
                 var obj = eval('(' + filesinfo + ')');
                 //将数据存入前端数据库
 				smartsite_db.transaction(function(tx){
 					for (var i = 0; i < obj.recordsTotal ; i++ ) {
-						tx.executeSql('INSERT INTO file (idfile, name, savename, savepath, iddoctype, doctypename ) VALUES (?,?,?,?,?,?)',
-							[ obj.data[i].id, obj.data[i].name, obj.data[i].savename, obj.data[i].savepath, obj.data[i].iddoctype, obj.data[i].doctypename ], success, error);
+						tx.executeSql('INSERT INTO file (idfile, name, datetime, savename, savepath, iddoctype, doctypename ) VALUES (?,?,?,?,?,?,?)',
+							[ obj.data[i].id, obj.data[i].name, obj.data[i].datetime, obj.data[i].savename, obj.data[i].savepath, obj.data[i].iddoctype, obj.data[i].doctypename ], success, error);
 	                }
 				});
             },
-            error: function (error) {
-                SystemUtils.showToast("网络异常，请检查网络连接！");
-            }
+            error: function (XMLHttpRequest,status) {
+                SystemUtils.consolelog("存储文件列表请求错误 status:"+status);
+		        if(status=='timeout'){
+		            SystemUtils.showToast("存储文件列表请求服务器响应超时！");
+		        }
+		        else{
+		            SystemUtils.showToast("存储文件列表请求网络异常，请检查网络连接！");
+		        }
+		    }
         });
 	}
 
@@ -348,7 +350,6 @@
 				SystemUtils.consolelog("results.rows.length:"+results.rows.length);
 			    var len = results.rows.length, i;
 			    for (i = 0; i < len; i++) {
-			        //SystemUtils.showToast("iddoctype:"+results.rows.item(i).iddoctype+" &name:"+results.rows.item(i).name);
 			        SystemUtils.consolelog("iddoctype:"+results.rows.item(i).iddoctype+" &name:"+results.rows.item(i).name);
 			    }
 			});

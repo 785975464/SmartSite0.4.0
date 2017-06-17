@@ -1,4 +1,4 @@
-package com.example.jay.smartsite040;
+package com.example.jay.smartsite;
 
 import android.content.Context;
 import android.content.Intent;
@@ -102,6 +102,10 @@ public class systemUtils {
         return config.downloadURL;
     }
     @JavascriptInterface
+    public String getStaffUrl(){ return config.staffURL; }
+    @JavascriptInterface
+    public String getRegisterUrl(){ return config.registerURL; }
+    @JavascriptInterface
     public String getAndroidDatabaseId(){ return config.databaseid; }
     @JavascriptInterface
     public String getAndroidPadCol(){ return config.androidpadcol; }
@@ -119,6 +123,8 @@ public class systemUtils {
     }
     @JavascriptInterface
     public String getAndroidIdPosition(){ return config.androidposition; }
+
+
 
     @JavascriptInterface
     public void setAndroidDatabaseId(String id){
